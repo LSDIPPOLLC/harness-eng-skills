@@ -1342,9 +1342,83 @@
       .nav-cta { display: none; }
       .mobile-toggle { display: block; }
 
+      .hero {
+        min-height: auto;
+        padding: 100px 16px 48px;
+      }
+
+      .hero-content {
+        max-width: 100%;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero-sub {
+        font-size: 16px;
+        margin-bottom: 32px;
+        padding: 0 4px;
+      }
+
+      .hero-actions {
+        margin-bottom: 48px;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        justify-content: center;
+        padding: 14px 24px;
+        font-size: 15px;
+      }
+
+      .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 24px 0;
+        gap: 0;
+      }
+
+      .stat {
+        padding: 12px 16px;
+        border-right: none;
+        border-bottom: 1px solid rgba(72, 72, 71, 0.15);
+      }
+
+      .stat:nth-child(odd) {
+        border-right: 1px solid rgba(72, 72, 71, 0.15);
+      }
+
+      .stat:nth-child(n+3) {
+        border-bottom: none;
+      }
+
+      .stat-value {
+        font-size: 24px;
+      }
+
+      .problem-solution-wrap {
+        padding: 48px 16px;
+      }
+
       .problem-solution {
         grid-template-columns: 1fr;
         gap: 16px;
+      }
+
+      .ps-card {
+        padding: 24px;
+      }
+
+      section {
+        padding: 0 16px;
+      }
+
+      .pillars-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pillar-card {
+        padding: 20px;
       }
 
       .skills-layout {
@@ -1356,15 +1430,26 @@
         display: none;
       }
 
-      .hero-stats {
-        gap: 24px;
-        flex-wrap: wrap;
+      .skill-header {
+        padding: 14px 16px;
       }
 
-      .footer-inner {
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
+      .skill-summary {
+        padding: 0 16px 12px;
+        font-size: 12px;
+      }
+
+      .skill-body-inner {
+        padding: 0 16px 16px;
+      }
+
+      .comp-svg {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      .skill-name {
+        font-size: 12px;
       }
 
       .workflow-tabs {
@@ -1378,8 +1463,73 @@
         padding: 10px 16px;
       }
 
+      .workflow-step {
+        gap: 16px;
+        padding-bottom: 32px;
+      }
+
+      .step-content h4 {
+        font-size: 16px;
+      }
+
+      .step-header {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
       .code-sidebar {
         position: static;
+      }
+
+      .maturity-panel {
+        padding: 24px;
+      }
+
+      .maturity-label {
+        font-size: 10px;
+      }
+
+      .section-title {
+        font-size: 28px;
+      }
+
+      .section-desc {
+        font-size: 15px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .footer-left {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+      }
+    }
+    @media (max-width: 480px) {
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .gs-card {
+        min-height: 200px;
+      }
+
+      .gs-num {
+        font-size: 56px;
       }
     }
   </style>
@@ -1398,7 +1548,7 @@
         <li><a href="#how-it-works">How It Works</a></li>
         <li><a href="#getting-started">Get Started</a></li>
       </ul>
-      <a href="https://github.com" class="nav-cta">
+      <a href="https://github.com/LSDIPPOLLC/harness-eng-skills" class="nav-cta">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
       </a>
@@ -2232,7 +2382,7 @@
         Harness &mdash; Configuration-as-Code for Claude Code
       </div>
       <ul class="footer-links">
-        <li><a href="https://github.com">GitHub</a></li>
+        <li><a href="https://github.com/LSDIPPOLLC/harness-eng-skills">GitHub</a></li>
         <li><a href="#pillars">Pillars</a></li>
         <li><a href="#skills">Skills</a></li>
         <li><a href="#getting-started">Get Started</a></li>
@@ -2269,6 +2419,21 @@
       });
       navLinks.forEach(link => {
         link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+
+    // ── Skills sidebar smooth scroll ──
+    document.querySelectorAll('.skills-nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').slice(1);
+        const target = document.getElementById(targetId);
+        if (!target) return;
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Expand the card if collapsed
+        if (!target.classList.contains('expanded')) {
+          target.classList.add('expanded');
+        }
       });
     });
 
