@@ -1,4 +1,29 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/harness-validate.sh",
+            "statusMessage": "Validating harness files..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/harness-drift.sh",
+            "statusMessage": "Checking harness health..."
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Read(docs/**)",
