@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(docs/**)",
+      "Edit(docs/**)",
+      "Write(docs/**)",
+      "Bash(python3 -m http.server:*)",
+      "Bash(kill:*)",
+      "Bash(lsof:*)",
+      "Bash(wc:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm -f:*)",
+      "Bash(cp:*)",
+      "Bash(curl -sL:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_tabs",
+      "mcp__stitch__create_project",
+      "mcp__stitch__create_design_system",
+      "mcp__stitch__update_design_system",
+      "mcp__stitch__apply_design_system",
+      "mcp__stitch__generate_screen_from_text",
+      "mcp__stitch__edit_screens",
+      "mcp__stitch__list_projects",
+      "mcp__stitch__list_screens",
+      "mcp__stitch__get_screen",
+      "mcp__stitch__get_project",
+      "mcp__stitch__list_design_systems",
+      "WebFetch(domain:contribution.usercontent.google.com)",
+      "WebFetch(domain:lh3.googleusercontent.com)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)"
+    ]
+  }
+}
