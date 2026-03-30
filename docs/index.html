@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harness — Configure Claude Code for Any Project</title>
+  <meta name="description" content="A configuration-as-code framework that transforms Claude Code from a stateless tool into an intelligent, context-aware collaborator.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Stitch-derived design tokens — Harness Dark vibrant system */
+      --bg-primary: #131313;
+      --bg-secondary: #1c1b1b;
+      --bg-card: #201f1f;
+      --bg-card-hover: #2a2a2a;
+      --bg-code: #0e0e0e;
+      --border: #454555;
+      --border-hover: #5c5c6e;
+      --text-primary: #e5e2e1;
+      --text-secondary: #adaaaa;
+      --text-muted: #767575;
+      --accent: #5c5ffd;
+      --accent-light: #c0c1ff;
+      --accent-glow: rgba(92, 95, 253, 0.15);
+      --accent-glow-strong: rgba(92, 95, 253, 0.25);
+      --green: #5bef90;
+      --green-dim: rgba(91, 239, 144, 0.12);
+      --amber: #fbbf24;
+      --amber-dim: rgba(251, 191, 36, 0.12);
+      --cyan: #50e1f9;
+      --cyan-dim: rgba(80, 225, 249, 0.12);
+      --rose: #ff6e84;
+      --rose-dim: rgba(255, 110, 132, 0.12);
+      --purple: #c0c1ff;
+      --purple-dim: rgba(192, 193, 255, 0.12);
+      --orange: #ffb68e;
+      --orange-dim: rgba(255, 182, 142, 0.12);
+      --teal: #6bfe9c;
+      --teal-dim: rgba(107, 254, 156, 0.12);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --font-label: 'Space Grotesk', 'Inter', sans-serif;
+      --radius-sm: 0.25rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --max-width: 1200px;
+      --section-gap: 120px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(19, 19, 19, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
+    }
+
+    nav.scrolled {
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo .material-symbols-outlined {
+      font-size: 24px;
+      color: #5c5ffd;
+    }
+
+    .nav-logo .logo-text {
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: -0.04em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: white;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: var(--accent-light);
+      transform: translateY(-1px);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 100px 24px 80px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(92, 95, 253, 0.15) 0%, transparent 70%),
+        radial-gradient(circle at 20% 80%, rgba(80, 225, 249, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 80% 60%, rgba(192, 193, 255, 0.06) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, #484847 1px, transparent 1px),
+        linear-gradient(to bottom, #484847 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid rgba(72, 72, 71, 0.2);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 32px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .hero-badge .dot {
+      position: relative;
+      width: 8px;
+      height: 8px;
+    }
+
+    .hero-badge .dot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+      opacity: 0.75;
+    }
+
+    .hero-badge .dot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    @keyframes ping {
+      75%, 100% { transform: scale(2); opacity: 0; }
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(90deg, #5c5ffd 0%, #3cd2eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto 48px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 80px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(90deg, #5c5ffd 0%, #3cd2eb 100%);
+      color: black;
+      padding: 16px 32px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 16px;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(92, 95, 253, 0.2);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(92, 95, 253, 0.3);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 16px 32px;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 40px 0;
+      border-top: 1px solid rgba(72, 72, 71, 0.1);
+      border-bottom: 1px solid rgba(72, 72, 71, 0.1);
+      background: rgba(19, 19, 19, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: var(--radius-xl);
+    }
+
+    .stat {
+      text-align: center;
+      padding: 0 24px;
+      border-right: 1px solid rgba(72, 72, 71, 0.2);
+    }
+
+    .stat:last-child {
+      border-right: none;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 900;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    /* ── Sections ── */
+    section {
+      padding: 0 24px;
+      margin-bottom: var(--section-gap);
+    }
+
+    .section-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-label);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-light);
+      margin-bottom: 16px;
+    }
+
+    .section-label svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* ── Problem / Solution (Stitch border-l style) ── */
+    .problem-solution-wrap {
+      background: var(--bg-secondary);
+      padding: 96px 24px;
+      margin-bottom: var(--section-gap);
+    }
+
+    .ps-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .ps-header h2 {
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .ps-header p {
+      color: var(--text-secondary);
+    }
+
+    .problem-solution {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .ps-card {
+      padding: 32px;
+      border-radius: var(--radius-xl);
+      background: var(--bg-primary);
+      border: none;
+      border-left: 4px solid;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ps-card.problem {
+      border-left-color: rgba(255, 110, 132, 0.4);
+    }
+
+    .ps-card.solution {
+      border-left-color: rgba(91, 239, 144, 0.4);
+    }
+
+    .ps-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 32px;
+    }
+
+    .problem h3 {
+      color: var(--rose);
+    }
+
+    .solution h3 {
+      color: #c3ffcd;
+    }
+
+    .ps-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .ps-card li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .ps-card li svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Pillars ── */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .pillar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pillar-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px rgba(92, 95, 253, 0.08);
+    }
+
+    .pillar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .pillar-num {
+      font-family: var(--font-label);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .pillar-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pillar-icon .material-symbols-outlined {
+      font-size: 22px;
+    }
+
+    .pillar-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .pillar-card p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pillar-question {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ── Skills ── */
+    .skills-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 32px;
+    }
+
+    .skills-sidebar {
+      position: sticky;
+      top: 96px;
+      align-self: start;
+    }
+
+    .skills-category {
+      margin-bottom: 24px;
+    }
+
+    .skills-category-label {
+      font-family: var(--font-label);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      padding-left: 12px;
+    }
+
+    .skills-nav {
+      list-style: none;
+    }
+
+    .skills-nav li a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      transition: all 0.15s;
+    }
+
+    .skills-nav li a:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .skills-nav li a .skill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .skills-main {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .skill-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      transition: all 0.25s;
+    }
+
+    .skill-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(92, 95, 253, 0.08);
+    }
+
+    .skill-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .skill-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .skill-name {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .skill-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-left: auto;
+    }
+
+    .skill-tag.core { background: var(--accent-glow); color: var(--accent-light); }
+    .skill-tag.atomic { background: var(--green-dim); color: var(--green); }
+
+    .skill-card p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .skill-pillar {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      font-weight: 500;
+    }
+
+    /* ── How It Works (Stitch layout) ── */
+    .workflow-tabs {
+      display: inline-flex;
+      background: var(--bg-secondary);
+      padding: 6px;
+      border-radius: var(--radius-xl);
+      margin-bottom: 48px;
+      border: 1px solid rgba(69, 69, 85, 0.1);
+    }
+
+    .workflow-tab {
+      padding: 10px 32px;
+      border-radius: var(--radius-md);
+      background: none;
+      border: none;
+      color: #c6c4d8;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-sans);
+      letter-spacing: -0.01em;
+    }
+
+    .workflow-tab.active {
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(92, 95, 253, 0.3);
+    }
+
+    .workflow-tab:hover:not(.active) {
+      color: var(--text-primary);
+    }
+
+    .workflow-panel {
+      display: none;
+    }
+
+    .workflow-panel.active {
+      display: block;
+    }
+
+    .workflow-split {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    @media (min-width: 1024px) {
+      .workflow-split {
+        grid-template-columns: 6fr 4fr;
+        gap: 64px;
+      }
+    }
+
+    .workflow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .workflow-step {
+      display: flex;
+      gap: 32px;
+      padding-bottom: 48px;
+      position: relative;
+    }
+
+    .workflow-step:last-child {
+      padding-bottom: 0;
+    }
+
+    .step-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #5c5ffd 0%, #c0c1ff 100%);
+      color: #0f00aa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: 14px;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .step-line {
+      width: 2px;
+      flex: 1;
+      background: rgba(69, 69, 85, 0.2);
+      margin-top: 0;
+    }
+
+    .workflow-step:last-child .step-line {
+      display: none;
+    }
+
+    .step-content {
+      padding-bottom: 0;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .step-content h4 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent-light);
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .step-skill {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: var(--bg-card);
+      border: 1px solid rgba(69, 69, 85, 0.2);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      color: #c6c4d8;
+      letter-spacing: -0.03em;
+    }
+
+    .step-content p {
+      color: #c6c4d8;
+      font-size: 15px;
+      line-height: 1.65;
+      font-weight: 500;
+    }
+
+    /* ── Code Block (Stitch sticky sidebar) ── */
+    .code-sidebar {
+      position: sticky;
+      top: 96px;
+    }
+
+    .code-showcase {
+      background: var(--bg-code);
+      border: 1px solid rgba(69, 69, 85, 0.1);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: 0 48px 48px -12px rgba(92, 95, 253, 0.08);
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+    }
+
+    .code-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .code-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .code-dot.red { background: #FF5F56; }
+    .code-dot.yellow { background: #FFBD2E; }
+    .code-dot.green { background: #27C93F; }
+
+    .code-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #c6c4d8;
+      font-family: var(--font-sans);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .code-spacer {
+      width: 48px;
+    }
+
+    .code-body {
+      padding: 24px;
+      overflow-x: auto;
+    }
+
+    .code-body pre {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: #c6c4d8;
+    }
+
+    .code-body .keyword { color: #c0c1ff; }
+    .code-body .string { color: #5bef90; }
+    .code-body .comment { color: var(--text-muted); }
+    .code-body .func { color: #50e1f9; }
+    .code-body .prop { color: #a3a6ff; }
+    .code-body .punct { color: var(--text-muted); }
+    .code-body .num { color: #ffb68e; }
+
+    .code-cta {
+      margin-top: 16px;
+      background: var(--bg-secondary);
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(69, 69, 85, 0.1);
+    }
+
+    .code-cta h4 {
+      color: var(--accent-light);
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .code-cta p {
+      color: #c6c4d8;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .code-cta-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #5c5ffd 0%, #c0c1ff 100%);
+      color: #0f00aa;
+      font-weight: 900;
+      font-size: 13px;
+      text-align: center;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .code-cta-btn:hover {
+      filter: brightness(1.1);
+      transform: scale(0.98);
+    }
+
+    /* ── Maturity Score (Stitch layout) ── */
+    .maturity-split {
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    @media (min-width: 768px) {
+      .maturity-split {
+        flex-direction: row;
+        gap: 48px;
+        align-items: start;
+      }
+
+      .maturity-text {
+        width: 33%;
+        position: sticky;
+        top: 96px;
+      }
+
+      .maturity-panel {
+        width: 67%;
+      }
+    }
+
+    .maturity-panel {
+      background: var(--bg-secondary);
+      padding: 40px;
+      border-radius: var(--radius-xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .maturity-panel::before {
+      content: '';
+      position: absolute;
+      top: -96px;
+      right: -96px;
+      width: 256px;
+      height: 256px;
+      background: rgba(92, 95, 253, 0.1);
+      filter: blur(100px);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .maturity-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -96px;
+      left: -96px;
+      width: 256px;
+      height: 256px;
+      background: rgba(80, 225, 249, 0.1);
+      filter: blur(100px);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .maturity-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .maturity-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .maturity-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .maturity-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .maturity-score {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .maturity-track {
+      width: 100%;
+      height: 6px;
+      background: #262626;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .maturity-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 1s ease;
+    }
+
+    .maturity-badge {
+      margin-top: 48px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .maturity-badge span {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      background: #262626;
+      padding: 12px 32px;
+      border-radius: 9999px;
+    }
+
+    /* ── Getting Started (Stitch bento layout) ── */
+    .getting-started-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .gs-card {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(72, 72, 71, 0.15);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      min-height: 256px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .gs-card:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .gs-card:hover .gs-num {
+      color: rgba(92, 95, 253, 0.1);
+    }
+
+    .gs-num {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-family: var(--font-sans);
+      font-size: 72px;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.03);
+      line-height: 1;
+      user-select: none;
+      transition: color 0.3s;
+    }
+
+    .gs-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .gs-card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .gs-card code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-light);
+    }
+
+    .gs-card-full {
+      grid-column: 1 / -1;
+      min-height: auto;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .gs-card-full .gs-num {
+      top: auto;
+      bottom: 0;
+      right: 48px;
+      font-size: 120px;
+    }
+
+    .gs-card-full .gs-text {
+      max-width: 480px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .gs-cta-btn {
+      display: inline-block;
+      padding: 12px 32px;
+      background: linear-gradient(135deg, #5c5ffd 0%, #a3a6ff 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: none;
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      z-index: 1;
+      text-decoration: none;
+    }
+
+    .gs-cta-btn:hover {
+      filter: brightness(1.1);
+      transform: scale(0.98);
+    }
+
+    @media (max-width: 768px) {
+      .getting-started-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gs-card-full {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 24px;
+      margin-top: var(--section-gap);
+    }
+
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-primary);
+    }
+
+    /* ── Animations ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .mobile-toggle { display: block; }
+
+      .problem-solution {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .skills-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .skills-sidebar {
+        position: static;
+        display: none;
+      }
+
+      .hero-stats {
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .workflow-tabs {
+        width: 100%;
+      }
+
+      .workflow-tab {
+        flex: 1;
+        text-align: center;
+        font-size: 13px;
+        padding: 10px 16px;
+      }
+
+      .code-sidebar {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ── Nav ── -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <span class="material-symbols-outlined">terminal</span>
+        <span class="logo-text">Harness</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#pillars">Pillars</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#getting-started">Get Started</a></li>
+      </ul>
+      <a href="https://github.com" class="nav-cta">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <button class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Configuration-as-Code for Claude Code
+      </div>
+      <h1>
+        Make Claude Code<br>
+        <span class="gradient">Truly Yours</span>
+      </h1>
+      <p class="hero-sub">
+        Harness transforms Claude Code from a stateless tool into an intelligent,
+        context-aware collaborator that understands your project, respects your
+        conventions, and improves over time.
+      </p>
+      <div class="hero-actions">
+        <a href="#getting-started" class="btn-primary">
+          Get Started
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="#how-it-works" class="btn-secondary">
+          See How It Works
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value">7</div>
+          <div class="stat-label">Configuration Pillars</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">13</div>
+          <div class="stat-label">Atomic Skills</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">21</div>
+          <div class="stat-label">Maturity Score</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">96%</div>
+          <div class="stat-label">Eval Score (w/ skills)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Problem / Solution (Stitch section bg + border-l cards) ── -->
+  <div class="problem-solution-wrap">
+    <div class="ps-header fade-in">
+      <h2>The Harness Difference</h2>
+      <p>Experience the leap from raw automation to engineered precision.</p>
+    </div>
+    <div class="problem-solution">
+      <div class="ps-card problem fade-in">
+        <h3>Without Harness</h3>
+        <ul>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d73357" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+            Stateless prompts require constant context re-provisioning.
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d73357" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+            Inconsistent naming conventions and architecture patterns.
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d73357" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+            No guardrails against destructive or unsafe actions.
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d73357" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+            No feedback loop for long-term intelligence growth.
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d73357" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+            Fragmented developer experience across environments.
+          </li>
+        </ul>
+      </div>
+      <div class="ps-card solution fade-in">
+        <h3>With Harness</h3>
+        <ul>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#5bef90" stroke-width="2"><path d="M3 8.5l3.5 3.5 6.5-7"/></svg>
+            Automatic context injection from deep project scanning.
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#5bef90" stroke-width="2"><path d="M3 8.5l3.5 3.5 6.5-7"/></svg>
+            Enforced architectural pillars that Claude strictly follows.
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#5bef90" stroke-width="2"><path d="M3 8.5l3.5 3.5 6.5-7"/></svg>
+            Atomic skills library for complex, multi-step tasks.
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#5bef90" stroke-width="2"><path d="M3 8.5l3.5 3.5 6.5-7"/></svg>
+            Continuous learning through evaluation and feedback logs.
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#5bef90" stroke-width="2"><path d="M3 8.5l3.5 3.5 6.5-7"/></svg>
+            Unified configuration-as-code shared across the team.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Pillars ── -->
+  <section id="pillars">
+    <div class="section-inner">
+      <div class="section-label">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 4v6l-7 4-7-4V5z"/></svg>
+        The Framework
+      </div>
+      <h2 class="section-title fade-in">7 Pillars of Configuration</h2>
+      <p class="section-desc fade-in">
+        Harness organizes every aspect of Claude Code configuration into seven
+        foundational pillars. Each is independently auditable and improvable.
+      </p>
+      <div class="pillars-grid">
+        <div class="pillar-card fade-in" style="border-top:4px solid rgba(99,102,241,0.5)">
+          <div class="pillar-header">
+            <span class="pillar-num" style="color:#818cf8">01 // COMPOSITION</span>
+            <div class="pillar-icon" style="background:rgba(99,102,241,0.1);color:#818cf8"><span class="material-symbols-outlined">bolt</span></div>
+          </div>
+          <h3>Skill Composition</h3>
+          <p>Define discrete atomic capabilities. Chain complex behaviors through modular skill blocks that can be versioned and tested independently.</p>
+          <div class="pillar-question">What should Claude be able to do?</div>
+        </div>
+        <div class="pillar-card fade-in" style="border-top:4px solid rgba(34,211,238,0.5)">
+          <div class="pillar-header">
+            <span class="pillar-num" style="color:#22d3ee">02 // DATA</span>
+            <div class="pillar-icon" style="background:rgba(34,211,238,0.1);color:#22d3ee"><span class="material-symbols-outlined">database</span></div>
+          </div>
+          <h3>Context Engineering</h3>
+          <p>Precision knowledge injection. Manage how data is chunked, prioritized, and served to the model within token constraints.</p>
+          <div class="pillar-question">What does Claude need to know?</div>
+        </div>
+        <div class="pillar-card fade-in" style="border-top:4px solid rgba(168,85,247,0.5)">
+          <div class="pillar-header">
+            <span class="pillar-num" style="color:#a855f7">03 // FLOW</span>
+            <div class="pillar-icon" style="background:rgba(168,85,247,0.1);color:#a855f7"><span class="material-symbols-outlined">account_tree</span></div>
+          </div>
+          <h3>Orchestration &amp; Routing</h3>
+          <p>Dynamic intent detection and multi-agent delegation. Route queries to the most efficient model or specialized skill.</p>
+          <div class="pillar-question">How should work be distributed?</div>
+        </div>
+        <div class="pillar-card fade-in" style="border-top:4px solid rgba(34,197,94,0.5)">
+          <div class="pillar-header">
+            <span class="pillar-num" style="color:#22c55e">04 // MEMORY</span>
+            <div class="pillar-icon" style="background:rgba(34,197,94,0.1);color:#22c55e"><span class="material-symbols-outlined">memory</span></div>
+          </div>
+          <h3>Persistence &amp; State</h3>
+          <p>Long-term memory management. Store user preferences, past interactions, and operational state across sessions.</p>
+          <div class="pillar-question">What should Claude remember?</div>
+        </div>
+        <div class="pillar-card fade-in" style="border-top:4px solid rgba(245,158,11,0.5)">
+          <div class="pillar-header">
+            <span class="pillar-num" style="color:#f59e0b">05 // TRUST</span>
+            <div class="pillar-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b"><span class="material-symbols-outlined">verified_user</span></div>
+          </div>
+          <h3>Quality Gates</h3>
+          <p>Automated evaluation layers. Run validation scripts, schema checks, and filters on every output before it ships.</p>
+          <div class="pillar-question">How do we catch mistakes early?</div>
+        </div>
+        <div class="pillar-card fade-in" style="border-top:4px solid rgba(244,63,94,0.5)">
+          <div class="pillar-header">
+            <span class="pillar-num" style="color:#f43f5e">06 // POLICY</span>
+            <div class="pillar-icon" style="background:rgba(244,63,94,0.1);color:#f43f5e"><span class="material-symbols-outlined">gavel</span></div>
+          </div>
+          <h3>Permissions &amp; Safety</h3>
+          <p>RBAC for AI agents. Define what actions are permitted and which require human-in-the-loop authorization.</p>
+          <div class="pillar-question">What can Claude do without asking?</div>
+        </div>
+        <div class="pillar-card fade-in" style="border-top:4px solid rgba(20,184,166,0.5)">
+          <div class="pillar-header">
+            <span class="pillar-num" style="color:#14b8a6">07 // UX</span>
+            <div class="pillar-icon" style="background:rgba(20,184,166,0.1);color:#14b8a6"><span class="material-symbols-outlined">psychology</span></div>
+          </div>
+          <h3>Ergonomics &amp; Trust</h3>
+          <p>Tone management and interaction tuning. Control how the model expresses uncertainty and presents responses.</p>
+          <div class="pillar-question">How should Claude communicate?</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Skills ── -->
+  <section id="skills">
+    <div class="section-inner">
+      <div class="section-label">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></svg>
+        The Toolkit
+      </div>
+      <h2 class="section-title fade-in">13 Atomic Skills</h2>
+      <p class="section-desc fade-in">
+        Each skill is a focused, composable unit that implements one or more pillars.
+        Call them individually or let the router dispatch automatically.
+      </p>
+      <div class="skills-layout">
+        <aside class="skills-sidebar">
+          <div class="skills-category">
+            <div class="skills-category-label">Core</div>
+            <ul class="skills-nav">
+              <li><a href="#skill-engineer"><span class="skill-dot" style="background:var(--accent-light)"></span>harness-engineer</a></li>
+              <li><a href="#skill-init"><span class="skill-dot" style="background:var(--cyan)"></span>harness-init</a></li>
+              <li><a href="#skill-audit"><span class="skill-dot" style="background:var(--amber)"></span>harness-audit</a></li>
+              <li><a href="#skill-loop"><span class="skill-dot" style="background:var(--green)"></span>harness-loop</a></li>
+            </ul>
+          </div>
+          <div class="skills-category">
+            <div class="skills-category-label">Atomic</div>
+            <ul class="skills-nav">
+              <li><a href="#skill-scaffold"><span class="skill-dot" style="background:var(--cyan)"></span>harness-scaffold</a></li>
+              <li><a href="#skill-context"><span class="skill-dot" style="background:var(--cyan)"></span>harness-context</a></li>
+              <li><a href="#skill-memory"><span class="skill-dot" style="background:var(--green)"></span>harness-memory</a></li>
+              <li><a href="#skill-permissions"><span class="skill-dot" style="background:var(--rose)"></span>harness-permissions</a></li>
+              <li><a href="#skill-hooks"><span class="skill-dot" style="background:var(--amber)"></span>harness-hooks</a></li>
+              <li><a href="#skill-skills"><span class="skill-dot" style="background:var(--accent-light)"></span>harness-skills</a></li>
+              <li><a href="#skill-routing"><span class="skill-dot" style="background:var(--purple)"></span>harness-routing</a></li>
+              <li><a href="#skill-gates"><span class="skill-dot" style="background:var(--amber)"></span>harness-gates</a></li>
+              <li><a href="#skill-ergonomics"><span class="skill-dot" style="background:var(--teal)"></span>harness-ergonomics</a></li>
+            </ul>
+          </div>
+        </aside>
+        <div class="skills-main">
+          <!-- Core skills -->
+          <div class="skill-card fade-in" id="skill-engineer">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--accent-glow);color:var(--accent-light)"><span class="material-symbols-outlined">hub</span></div>
+              <span class="skill-name">harness-engineer</span>
+              <span class="skill-tag core">Core</span>
+            </div>
+            <p>Master router and dispatcher. Understands your intent and routes to the right atomic skill. The single entry point for all harness work.</p>
+          </div>
+          <div class="skill-card fade-in" id="skill-init">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--cyan-dim);color:var(--cyan)"><span class="material-symbols-outlined">rocket_launch</span></div>
+              <span class="skill-name">harness-init</span>
+              <span class="skill-tag core">Core</span>
+            </div>
+            <p>Bootstrap orchestrator. Sets up a complete harness from scratch by running scaffold, permissions, memory, hooks, and context in sequence.</p>
+          </div>
+          <div class="skill-card fade-in" id="skill-audit">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--amber-dim);color:var(--amber)"><span class="material-symbols-outlined">query_stats</span></div>
+              <span class="skill-name">harness-audit</span>
+              <span class="skill-tag core">Core</span>
+            </div>
+            <p>Evaluates your harness against all 7 pillars, scores each 0&ndash;3, and produces a structured report with ranked improvement recommendations.</p>
+          </div>
+          <div class="skill-card fade-in" id="skill-loop">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--green-dim);color:var(--green)"><span class="material-symbols-outlined">autorenew</span></div>
+              <span class="skill-name">harness-loop</span>
+              <span class="skill-tag core">Core</span>
+            </div>
+            <p>Continuous improvement engine. Audit, find the weakest pillar, improve it, validate, repeat. Each iteration strengthens your configuration.</p>
+          </div>
+
+          <!-- Atomic skills -->
+          <div class="skill-card fade-in" id="skill-scaffold">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--cyan-dim);color:var(--cyan)"><span class="material-symbols-outlined">construction</span></div>
+              <span class="skill-name">harness-scaffold</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Analyzes your project's stack, frameworks, and patterns to generate a tailored CLAUDE.md and <code>.claude/</code> directory structure.</p>
+            <span class="skill-pillar">&#x2192; Context Engineering</span>
+          </div>
+          <div class="skill-card fade-in" id="skill-context">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--cyan-dim);color:var(--cyan)"><span class="material-symbols-outlined">data_usage</span></div>
+              <span class="skill-name">harness-context</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Optimizes your context budget. Analyzes what Claude loads, identifies waste, and restructures for maximum signal-to-token ratio.</p>
+            <span class="skill-pillar">&#x2192; Context Engineering</span>
+          </div>
+          <div class="skill-card fade-in" id="skill-memory">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--green-dim);color:var(--green)"><span class="material-symbols-outlined">psychology</span></div>
+              <span class="skill-name">harness-memory</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Designs and sets up the cross-session memory system. Structured storage for user preferences, project context, feedback, and references.</p>
+            <span class="skill-pillar">&#x2192; Persistence &amp; State</span>
+          </div>
+          <div class="skill-card fade-in" id="skill-permissions">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--rose-dim);color:var(--rose)"><span class="material-symbols-outlined">admin_panel_settings</span></div>
+              <span class="skill-name">harness-permissions</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Configures permission boundaries for every tool in your project. Balances autonomy with safety for your specific workflows.</p>
+            <span class="skill-pillar">&#x2192; Permissions &amp; Safety</span>
+          </div>
+          <div class="skill-card fade-in" id="skill-hooks">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--amber-dim);color:var(--amber)"><span class="material-symbols-outlined">webhook</span></div>
+              <span class="skill-name">harness-hooks</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Implements automated behaviors: format-on-save, lint-on-edit, secret scanning, dangerous command gates, and test-on-change.</p>
+            <span class="skill-pillar">&#x2192; Quality Gates</span>
+          </div>
+          <div class="skill-card fade-in" id="skill-skills">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--accent-glow);color:var(--accent-light)"><span class="material-symbols-outlined">widgets</span></div>
+              <span class="skill-name">harness-skills</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Analyzes project workflows and decomposes them into reusable, composable skills. Identifies what capabilities your harness needs.</p>
+            <span class="skill-pillar">&#x2192; Skill Composition</span>
+          </div>
+          <div class="skill-card fade-in" id="skill-routing">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--purple-dim);color:var(--purple)"><span class="material-symbols-outlined">device_hub</span></div>
+              <span class="skill-name">harness-routing</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Designs agent orchestration patterns. Parallelization strategies, build loops, and worktree isolation for complex workflows.</p>
+            <span class="skill-pillar">&#x2192; Orchestration &amp; Routing</span>
+          </div>
+          <div class="skill-card fade-in" id="skill-gates">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--amber-dim);color:var(--amber)"><span class="material-symbols-outlined">verified_user</span></div>
+              <span class="skill-name">harness-gates</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Creates validation gates and feedback loops. Pre-commit checks, drift detection, and automated quality enforcement.</p>
+            <span class="skill-pillar">&#x2192; Quality Gates</span>
+          </div>
+          <div class="skill-card fade-in" id="skill-ergonomics">
+            <div class="skill-header">
+              <div class="skill-icon" style="background:var(--teal-dim);color:var(--teal)"><span class="material-symbols-outlined">tune</span></div>
+              <span class="skill-name">harness-ergonomics</span>
+              <span class="skill-tag atomic">Atomic</span>
+            </div>
+            <p>Tunes interaction style: verbosity level, autonomy calibration, error communication, and trust boundaries.</p>
+            <span class="skill-pillar">&#x2192; Ergonomics &amp; Trust</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ── -->
+  <section id="how-it-works">
+    <div class="section-inner">
+      <div class="section-label">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2.5l2 4h-4l2-4z"/></svg>
+        Workflows
+      </div>
+      <h2 class="section-title fade-in">How It Works</h2>
+      <p class="section-desc fade-in">
+        Three primary workflows cover the full lifecycle &mdash; from initial setup
+        to ongoing optimization.
+      </p>
+
+      <div class="workflow-tabs">
+        <button class="workflow-tab active" data-tab="bootstrap">Bootstrap</button>
+        <button class="workflow-tab" data-tab="audit">Audit</button>
+        <button class="workflow-tab" data-tab="improve">Improve</button>
+      </div>
+
+      <div class="workflow-panel active" id="panel-bootstrap">
+        <div class="workflow-split">
+          <div class="workflow-steps">
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">1</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Scaffold</h4><span class="step-skill">harness-scaffold</span></div>
+                <p>Analyze project structure, frameworks, and patterns. Generate a tailored CLAUDE.md and settings.json that aligns with your architectural requirements.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">2</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Configure Permissions</h4><span class="step-skill">harness-permissions</span></div>
+                <p>Set up tool-specific permission boundaries. Auto-allow safe operations, prompt for destructive ones.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">3</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Set Up Memory</h4><span class="step-skill">harness-memory</span></div>
+                <p>Initialize the persistent memory system. Seed with user profile, project context, and key decisions.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">4</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Install Hooks</h4><span class="step-skill">harness-hooks</span></div>
+                <p>Add automated quality gates: code formatting, linting, secret scanning, and test triggers.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">5</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Optimize Context</h4><span class="step-skill">harness-context</span></div>
+                <p>Fine-tune what Claude loads. Trim waste, front-load critical info, reference files instead of inlining.</p>
+              </div>
+            </div>
+          </div>
+          <div class="code-sidebar">
+            <div class="code-showcase fade-in">
+              <div class="code-header">
+                <div class="code-dots"><span class="code-dot red"></span><span class="code-dot yellow"></span><span class="code-dot green"></span></div>
+                <span class="code-title">CLAUDE.md</span>
+                <div class="code-spacer"></div>
+              </div>
+              <div class="code-body">
+<pre><span class="keyword"># Build &amp; Test</span>
+<span class="comment">pnpm dev</span>   <span class="punct"># start dev server</span>
+<span class="comment">pnpm test</span>  <span class="punct"># execute vitest</span>
+
+<span class="keyword"># Architecture</span>
+<span class="punct">- Next.js 14 + App Router</span>
+<span class="punct">- PostgreSQL via Prisma</span>
+
+<span class="keyword"># Conventions</span>
+<span class="punct">- Use</span> <span class="num">"server actions"</span> <span class="punct">sparingly</span>
+<span class="punct">- PascalCase for Components</span>
+
+<span class="keyword"># Critical Rules</span>
+<span class="punct">1. NEVER update</span> <span class="num">prisma/migrations</span>
+<span class="punct">2. ALWAYS run tests first</span></pre>
+              </div>
+            </div>
+            <div class="code-cta fade-in">
+              <h4>Ready to bootstrap?</h4>
+              <p>Start your project with a fully configured harness in seconds.</p>
+              <a href="#getting-started" class="code-cta-btn">Get Started</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-panel" id="panel-audit">
+        <div class="workflow-split">
+          <div class="workflow-steps">
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">1</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Read All Harness Files</h4></div>
+                <p>Scan CLAUDE.md, settings.json, memory system, hooks, and skill definitions.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">2</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Score Each Pillar</h4></div>
+                <p>Rate each of the 7 pillars from 0 (not configured) to 3 (advanced). Total maturity out of 21.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">3</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Produce Report</h4><span class="step-skill">harness-audit</span></div>
+                <p>Generate a structured report with pillar scores, top 3 recommendations, and direct routing to the skill that fixes each gap.</p>
+              </div>
+            </div>
+          </div>
+          <div class="code-sidebar">
+            <div class="code-showcase fade-in">
+              <div class="code-header">
+                <div class="code-dots"><span class="code-dot red"></span><span class="code-dot yellow"></span><span class="code-dot green"></span></div>
+                <span class="code-title">CLAUDE.md</span>
+                <div class="code-spacer"></div>
+              </div>
+              <div class="code-body">
+<pre><span class="keyword"># Build &amp; Test</span>
+<span class="comment">pnpm dev</span>   <span class="punct"># start dev server</span>
+<span class="comment">pnpm test</span>  <span class="punct"># execute vitest</span>
+
+<span class="keyword"># Architecture</span>
+<span class="punct">- Next.js 14 + App Router</span>
+<span class="punct">- PostgreSQL via Prisma</span>
+
+<span class="keyword"># Conventions</span>
+<span class="punct">- Use</span> <span class="num">"server actions"</span> <span class="punct">sparingly</span>
+<span class="punct">- PascalCase for Components</span>
+
+<span class="keyword"># Critical Rules</span>
+<span class="punct">1. NEVER update</span> <span class="num">prisma/migrations</span>
+<span class="punct">2. ALWAYS run tests first</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-panel" id="panel-improve">
+        <div class="workflow-split">
+          <div class="workflow-steps">
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">1</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Audit Current State</h4></div>
+                <p>Run a full 7-pillar audit to identify the current maturity score.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">2</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Identify Weakest Pillar</h4></div>
+                <p>Find the pillar with the lowest score. This is where improvement has the highest impact.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">3</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Improve It</h4></div>
+                <p>Route to the atomic skill for that pillar. Make targeted, validated improvements.</p>
+              </div>
+            </div>
+            <div class="workflow-step fade-in">
+              <div class="step-indicator"><div class="step-num">4</div><div class="step-line"></div></div>
+              <div class="step-content">
+                <div class="step-header"><h4>Validate &amp; Repeat</h4><span class="step-skill">harness-loop</span></div>
+                <p>Re-score to confirm improvement. Check for regressions. Continue to the next weakest pillar.</p>
+              </div>
+            </div>
+          </div>
+          <div class="code-sidebar">
+            <div class="code-showcase fade-in">
+              <div class="code-header">
+                <div class="code-dots"><span class="code-dot red"></span><span class="code-dot yellow"></span><span class="code-dot green"></span></div>
+                <span class="code-title">CLAUDE.md</span>
+                <div class="code-spacer"></div>
+              </div>
+              <div class="code-body">
+<pre><span class="keyword"># Build &amp; Test</span>
+<span class="comment">pnpm dev</span>   <span class="punct"># start dev server</span>
+<span class="comment">pnpm test</span>  <span class="punct"># execute vitest</span>
+
+<span class="keyword"># Architecture</span>
+<span class="punct">- Next.js 14 + App Router</span>
+<span class="punct">- PostgreSQL via Prisma</span>
+
+<span class="keyword"># Conventions</span>
+<span class="punct">- Use</span> <span class="num">"server actions"</span> <span class="punct">sparingly</span>
+<span class="punct">- PascalCase for Components</span>
+
+<span class="keyword"># Critical Rules</span>
+<span class="punct">1. NEVER update</span> <span class="num">prisma/migrations</span>
+<span class="punct">2. ALWAYS run tests first</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Maturity (Stitch 33/66 split) ── -->
+  <section id="maturity">
+    <div class="section-inner">
+      <div class="maturity-split fade-in">
+        <div class="maturity-text">
+          <div class="section-label">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2.5 5 5.5.8-4 3.9.9 5.3L8 13.3 3.1 16l.9-5.3-4-3.9L5.5 6z"/></svg>
+            Measurement
+          </div>
+          <h2 class="section-title">Maturity Scoring</h2>
+          <p style="color:var(--text-secondary);line-height:1.7;margin-top:16px;">
+            Every harness is evaluated across seven core dimensions. Scores range from 0 (not configured) to 3 (advanced), providing a clear roadmap for improvement.
+          </p>
+        </div>
+        <div class="maturity-panel">
+          <div class="maturity-visual">
+            <div class="maturity-bar">
+              <div class="maturity-bar-header">
+                <span class="maturity-label">Skill Composition</span>
+                <span class="maturity-score" style="color:#5c5ffd">3 / 3</span>
+              </div>
+              <div class="maturity-track"><div class="maturity-fill" style="width:100%;background:#5c5ffd"></div></div>
+            </div>
+            <div class="maturity-bar">
+              <div class="maturity-bar-header">
+                <span class="maturity-label">Context Engineering</span>
+                <span class="maturity-score" style="color:#50e1f9">3 / 3</span>
+              </div>
+              <div class="maturity-track"><div class="maturity-fill" style="width:100%;background:#50e1f9"></div></div>
+            </div>
+            <div class="maturity-bar">
+              <div class="maturity-bar-header">
+                <span class="maturity-label">Orchestration</span>
+                <span class="maturity-score" style="color:#f288ff">2 / 3</span>
+              </div>
+              <div class="maturity-track"><div class="maturity-fill" style="width:66%;background:#f288ff"></div></div>
+            </div>
+            <div class="maturity-bar">
+              <div class="maturity-bar-header">
+                <span class="maturity-label">Persistence</span>
+                <span class="maturity-score" style="color:#4ade80">3 / 3</span>
+              </div>
+              <div class="maturity-track"><div class="maturity-fill" style="width:100%;background:#4ade80"></div></div>
+            </div>
+            <div class="maturity-bar">
+              <div class="maturity-bar-header">
+                <span class="maturity-label">Quality Gates</span>
+                <span class="maturity-score" style="color:#fbbf24">2 / 3</span>
+              </div>
+              <div class="maturity-track"><div class="maturity-fill" style="width:66%;background:#fbbf24"></div></div>
+            </div>
+            <div class="maturity-bar">
+              <div class="maturity-bar-header">
+                <span class="maturity-label">Permissions</span>
+                <span class="maturity-score" style="color:#d73357">3 / 3</span>
+              </div>
+              <div class="maturity-track"><div class="maturity-fill" style="width:100%;background:#d73357"></div></div>
+            </div>
+            <div class="maturity-bar">
+              <div class="maturity-bar-header">
+                <span class="maturity-label">Ergonomics</span>
+                <span class="maturity-score" style="color:#3cd2eb">2 / 3</span>
+              </div>
+              <div class="maturity-track"><div class="maturity-fill" style="width:66%;background:#3cd2eb"></div></div>
+            </div>
+          </div>
+          <div class="maturity-badge">
+            <span>Example audit output &mdash; total score: 18/21</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Getting Started (Stitch bento grid) ── -->
+  <section id="getting-started">
+    <div class="section-inner">
+      <div class="section-label">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 2l8 6-8 6z"/></svg>
+        Quick Start
+      </div>
+      <h2 class="section-title fade-in">Get Started</h2>
+      <p class="section-desc fade-in">
+        Begin your journey with these foundational steps.
+      </p>
+      <div class="getting-started-grid">
+        <div class="gs-card fade-in">
+          <span class="gs-num">01</span>
+          <h3>01 Install Skills</h3>
+          <p>Copy the <code>skills/</code> directory into your project.</p>
+        </div>
+        <div class="gs-card fade-in">
+          <span class="gs-num">02</span>
+          <h3>02 Run the Engineer</h3>
+          <p>Call <code>harness-engineer</code> to start the analysis.</p>
+        </div>
+        <div class="gs-card fade-in">
+          <span class="gs-num">03</span>
+          <h3>03 Bootstrap</h3>
+          <p>Run <code>harness-init</code> for fresh projects to set defaults.</p>
+        </div>
+        <div class="gs-card fade-in">
+          <span class="gs-num">04</span>
+          <h3>04 Audit</h3>
+          <p>Run <code>harness-audit</code> for existing setups to check compliance.</p>
+        </div>
+        <div class="gs-card gs-card-full fade-in">
+          <span class="gs-num">05</span>
+          <div class="gs-text">
+            <h3>05 Iterate</h3>
+            <p>Use <code>harness-loop</code> for continuous improvement. Establish a recurring cycle of refinement to maintain top-tier maturity scores across all pillars.</p>
+          </div>
+          <a href="#how-it-works" class="gs-cta-btn">Launch Feedback Loop</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="material-symbols-outlined" style="color:#5c5ffd;font-size:20px">terminal</span>
+        Harness &mdash; Configuration-as-Code for Claude Code
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://github.com">GitHub</a></li>
+        <li><a href="#pillars">Pillars</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#getting-started">Get Started</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    // ── Scroll observer for fade-in animations ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ── Nav scroll effect ──
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // ── Active nav link ──
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const top = section.offsetTop - 100;
+        if (window.scrollY >= top) current = section.getAttribute('id');
+      });
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+
+    // ── Workflow tabs ──
+    document.querySelectorAll('.workflow-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.workflow-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.workflow-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+        // Re-observe new panel's fade-ins
+        document.querySelectorAll('#panel-' + tab.dataset.tab + ' .fade-in').forEach(el => {
+          el.classList.remove('visible');
+          observer.observe(el);
+        });
+      });
+    });
+
+    // ── Animate maturity bars on scroll ──
+    const maturityObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.maturity-fill').forEach(fill => {
+            const width = fill.style.width;
+            fill.style.width = '0%';
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                fill.style.width = width;
+              });
+            });
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    const maturitySection = document.querySelector('.maturity-visual');
+    if (maturitySection) maturityObserver.observe(maturitySection);
+  </script>
+</body>
+</html>
