@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npm run format)",
+      "Bash(npm run test)",
+      "Bash(npm run test:watch)",
+      "Bash(npm run test:coverage)",
+      "Bash(npm run preview)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm install *)",
+      "Bash(npm ls *)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(git push*)",
+      "Bash(git pull*)",
+      "Bash(git stash*)",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(npm publish*)",
+      "Bash(vercel --prod*)"
+    ]
+  }
+}

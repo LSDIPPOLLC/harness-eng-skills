@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "skill_name": "harness-engineer",
+    "skill_path": "/home/lyle/projects/harness/skills/harness-engineer",
+    "executor_model": "claude-opus-4-6",
+    "timestamp": "2026-03-27T19:15:00Z",
+    "evals_run": ["bootstrap-react-ts-project", "diagnose-broken-harness", "create-python-hooks"],
+    "runs_per_configuration": 1,
+    "iteration": 2
+  },
+  "runs": [
+    {
+      "eval_name": "bootstrap-react-ts-project",
+      "with_skill": {"pass_rate": 1.0, "passed": 10, "total": 10},
+      "without_skill": {"pass_rate": 0.6, "passed": 6, "total": 10}
+    },
+    {
+      "eval_name": "diagnose-broken-harness",
+      "with_skill": {"pass_rate": 1.0, "passed": 8, "total": 8},
+      "without_skill": {"pass_rate": 0.5, "passed": 4, "total": 8}
+    },
+    {
+      "eval_name": "create-python-hooks",
+      "with_skill": {"pass_rate": 0.875, "passed": 7, "total": 8},
+      "without_skill": {"pass_rate": 1.0, "passed": 8, "total": 8}
+    }
+  ],
+  "run_summary": {
+    "with_skill": {"mean_pass_rate": 0.958, "stddev_pass_rate": 0.059},
+    "without_skill": {"mean_pass_rate": 0.70, "stddev_pass_rate": 0.217},
+    "delta": {"pass_rate": "+0.258"}
+  },
+  "comparison_to_iteration_1": {
+    "iteration_1": {"with_skill": 1.0, "without_skill": 0.73, "delta": 0.27},
+    "iteration_2": {"with_skill": 0.958, "without_skill": 0.70, "delta": 0.258},
+    "notes": "With-skill dropped 1 assertion on eval 3 (lint hook exits 0 always instead of using exit 2 for unfixable errors — the skill says 'report but don't block' which is a reasonable design choice but the grader judged strictly). Baseline dropped further on evals 1&2 due to new engineering standards assertions which baseline cannot satisfy."
+  },
+  "notes": [
+    "Eval 1 (Bootstrap): with_skill 10/10, baseline 6/10 (+40%). The new Engineering Standards section is the key differentiator — with_skill produced opinionated guidance on component patterns, state management (decision tree), API fetching, Zod validation, and testing philosophy with explicit anti-patterns.",
+    "Eval 2 (Diagnose): with_skill 8/8, baseline 4/8 (+50%). Largest delta. Baseline still lacks pillar framework, formal audit report, and now also lacks engineering standards in fixed-CLAUDE.md.",
+    "Eval 3 (Hooks): with_skill 7/8, baseline 8/8 (-12.5%). Baseline actually scored higher this time — it used exit 2 for unfixable lint errors while with_skill always exits 0 (report-only). Both got the settings.json format correct this time.",
+    "The engineering standards feedback from iteration 1 is working — with_skill now produces rich domain guidance that baseline cannot match."
+  ]
+}

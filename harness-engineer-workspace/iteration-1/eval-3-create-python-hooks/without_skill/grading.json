@@ -1,0 +1,49 @@
+{
+  "eval_id": 3,
+  "eval_name": "create-python-hooks",
+  "variant": "without_skill",
+  "expectations": [
+    {
+      "text": "Creates a lint hook shell script that invokes ruff",
+      "passed": true,
+      "evidence": "auto-lint.sh exists, invokes 'ruff check --fix' and 'ruff format' on the target file."
+    },
+    {
+      "text": "Creates a secret scanning hook shell script",
+      "passed": true,
+      "evidence": "secret-scanner.sh exists, scans CLAUDE_TOOL_INPUT for secret patterns using grep -P with a comprehensive combined regex."
+    },
+    {
+      "text": "Lint hook is PostToolUse on Edit (fires after edits, not before)",
+      "passed": true,
+      "evidence": "settings.json configures the lint hook under \"PostToolUse\" with matcher \"Edit|Write\". Script header also states 'PostToolUse'."
+    },
+    {
+      "text": "Secret hook is PreToolUse on Write (blocks before writing)",
+      "passed": true,
+      "evidence": "settings.json configures the secret hook under \"PreToolUse\" with matcher \"Edit|Write\". Script uses exit 2 to block writes containing secrets."
+    },
+    {
+      "text": "Scripts use correct exit codes: 0 for pass, 2 for block",
+      "passed": true,
+      "evidence": "secret-scanner.sh exits 2 when secrets are detected and exits 0 when clean. auto-lint.sh exits 0 on success (implicit at end of script). It does exit 1 on unfixable lint errors, but this is a PostToolUse hook so blocking semantics don't apply."
+    },
+    {
+      "text": "settings.json contains a hooks array with both hooks configured",
+      "passed": false,
+      "evidence": "settings.json uses a nested object structure: {\"hooks\": {\"PreToolUse\": [...], \"PostToolUse\": [...]}} rather than the correct Claude Code format which is a flat array: {\"hooks\": [...]}. Both hooks are present but the format is incorrect and would not be recognized by Claude Code."
+    },
+    {
+      "text": "Lint hook filters for .py files specifically",
+      "passed": true,
+      "evidence": "auto-lint.sh checks: 'if [[ \"$FILE_PATH\" != *.py ]]; then exit 0; fi' to skip non-Python files."
+    },
+    {
+      "text": "Secret scanner checks for realistic patterns (AWS keys, API tokens, private keys)",
+      "passed": true,
+      "evidence": "secret-scanner.sh checks for AWS keys (AKIA pattern), GitHub tokens (ghp_/gho_/ghs_ etc.), PEM private keys, Slack tokens (xox[baprs]-), database connection strings with credentials, generic password/token/api_key assignments, and .env-style secret assignments."
+    }
+  ],
+  "pass_rate": 0.875,
+  "notes": "Good output overall with thorough secret patterns and correct hook types. The main issue is the settings.json format: it uses a nested object structure keyed by hook type rather than the correct flat array format that Claude Code expects. The scripts also reference CLAUDE_FILE_PATH which is not a real Claude Code environment variable (the correct approach is to parse file_path from CLAUDE_TOOL_INPUT via jq, as the with_skill variant does). The secret scanner has very comprehensive patterns including Slack tokens and database connection strings. The lint hook uses ruff check --fix which is a nice touch."
+}

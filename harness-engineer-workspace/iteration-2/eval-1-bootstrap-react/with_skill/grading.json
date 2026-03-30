@@ -1,0 +1,59 @@
+{
+  "eval_id": 1,
+  "eval_name": "bootstrap-react-ts-project",
+  "variant": "with_skill",
+  "expectations": [
+    {
+      "text": "Produces a CLAUDE.md file",
+      "passed": true,
+      "evidence": "CLAUDE.md exists at outputs/CLAUDE.md, 220 lines of substantive content."
+    },
+    {
+      "text": "Produces a settings.json file",
+      "passed": true,
+      "evidence": "settings.json exists at outputs/settings.json with permissions and hooks configuration."
+    },
+    {
+      "text": "CLAUDE.md references vite, jest, and vercel specifically",
+      "passed": true,
+      "evidence": "Header: 'React + TypeScript SPA built with Vite, deployed to Vercel.' Dependencies section lists Vite, Vercel. Commands include 'npx jest', 'npx vite'. Testing section: 'Framework: Jest with React Testing Library'."
+    },
+    {
+      "text": "CLAUDE.md includes runnable build/test/dev commands",
+      "passed": true,
+      "evidence": "Build & Run section includes: npm install, npm run dev, npm test, npx jest (single file), npm run test:watch, npm run lint, npx prettier --write, npx tsc --noEmit, npm run build, npm run preview."
+    },
+    {
+      "text": "settings.json permissions include npm/npx/node but NOT Bash(*)",
+      "passed": true,
+      "evidence": "21 scoped allow rules including Bash(npm test *), Bash(npm run *), Bash(npx jest *), Bash(node *), etc. No Bash(*) wildcard. All permissions are specific to safe read/run operations."
+    },
+    {
+      "text": "Output includes or recommends auto-format hooks",
+      "passed": true,
+      "evidence": "Three hooks created and configured in settings.json: auto-format.sh (PostToolUse on Edit|Write runs Prettier), auto-lint.sh (PostToolUse on Edit runs ESLint), secret-scanner.sh (PreToolUse on Write|Edit blocks secrets)."
+    },
+    {
+      "text": "Creates or recommends a memory directory structure",
+      "passed": true,
+      "evidence": "Full memory/ directory with MEMORY.md index and 4 seed files: user_role.md, project_tech_stack.md, project_deployment.md, reference_vercel.md."
+    },
+    {
+      "text": "CLAUDE.md is under 400 lines",
+      "passed": true,
+      "evidence": "CLAUDE.md is 220 lines, well within the 400-line budget."
+    },
+    {
+      "text": "CLAUDE.md includes opinionated Engineering Standards covering component patterns, state management, API/data fetching, validation, and testing philosophy",
+      "passed": true,
+      "evidence": "Dedicated 'Engineering Standards' section with 5 subsections: Component Patterns (composition over configuration, named exports only, 150-line limit, avoid React.FC), State Management (decision tree: URL > React Query > useState > Zustand, 'never store API responses in Redux or Zustand'), API & Data Fetching (centralized API client, typed ApiError, staleTime caching strategy), Validation (Zod at boundaries, infer TS types from schemas, React Hook Form + Zod resolver), Testing Philosophy (behavior over implementation, don't mock what you don't own). All subsections are opinionated and prescriptive."
+    },
+    {
+      "text": "Testing section includes specific anti-patterns (e.g. over-mocking) and guidance on what makes a meaningful test",
+      "passed": true,
+      "evidence": "Testing Philosophy subsection explicitly lists anti-patterns: 'Do not mock what you do not own' (names React Query, router, Zustand, DOM APIs as things not to mock), 'do not test implementation details (internal state shape, method calls, render counts)', 'do not test third-party library behavior', 'do not test styles or CSS classes'. Positive guidance: 'Test behavior, not implementation', integration-style component tests, 3-8 tests per component, MSW for API mocking. Also states: 'If you refactor the internals and the tests break but the feature still works, the tests were wrong.'"
+    }
+  ],
+  "pass_rate": 1.0,
+  "notes": "Excellent output across all dimensions. The Engineering Standards section is the standout improvement in iteration 2 -- it provides genuinely opinionated, actionable guidance rather than generic best practices. The state management decision tree is particularly well done. The testing philosophy section goes deep on anti-patterns with concrete examples of what not to mock. The overall CLAUDE.md is well-structured with build commands front-loaded and engineering standards prominently placed. Memory system and hooks add practical value. 220 lines is an efficient use of context budget."
+}

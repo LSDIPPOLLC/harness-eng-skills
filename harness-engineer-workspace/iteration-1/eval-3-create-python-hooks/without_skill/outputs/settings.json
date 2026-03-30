@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hook": ".claude/hooks/secret-scanner.sh",
+        "description": "Scans for potential secrets and credentials before any file is written"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hook": ".claude/hooks/auto-lint.sh",
+        "description": "Runs ruff linter and formatter on Python files after edits"
+      }
+    ]
+  }
+}

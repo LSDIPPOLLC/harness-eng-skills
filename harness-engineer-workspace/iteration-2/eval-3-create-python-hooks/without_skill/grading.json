@@ -1,0 +1,51 @@
+{
+  "eval_id": 3,
+  "eval_name": "create-python-hooks",
+  "variant": "without_skill",
+  "expectations": [
+    {
+      "text": "Creates a lint hook shell script that invokes ruff",
+      "passed": true,
+      "evidence": "auto-lint.sh exists, invokes 'ruff check --fix', 'ruff format', and a final 'ruff check' for verification, all with --config pointing to pyproject.toml."
+    },
+    {
+      "text": "Creates a secret scanning hook shell script",
+      "passed": true,
+      "evidence": "secret-scanner.sh exists, scans content extracted from CLAUDE_TOOL_INPUT for nine categories of secret patterns."
+    },
+    {
+      "text": "Lint hook is PostToolUse on Edit",
+      "passed": true,
+      "evidence": "settings.json entry has \"type\": \"PostToolUse\", \"matcher\": \"Edit|Write\". Script comment states 'PostToolUse Hook'."
+    },
+    {
+      "text": "Secret hook is PreToolUse on Write",
+      "passed": true,
+      "evidence": "settings.json entry has \"type\": \"PreToolUse\", \"matcher\": \"Edit|Write\". Script comment states 'PreToolUse Hook'."
+    },
+    {
+      "text": "Scripts use exit codes 0 for pass, 2 for block",
+      "passed": true,
+      "evidence": "auto-lint.sh exits 0 when clean, exits 2 when unfixable lint errors remain. secret-scanner.sh exits 0 when no secrets found, exits 2 when secrets detected. Both scripts document exit codes in header comments."
+    },
+    {
+      "text": "settings.json has hooks array with both hooks (flat array, not nested objects)",
+      "passed": true,
+      "evidence": "settings.json contains a flat \"hooks\" array with four entries (two new hooks plus two pre-existing hooks). Each entry has type, matcher, description, and command fields at the same level."
+    },
+    {
+      "text": "Lint hook filters for .py files",
+      "passed": true,
+      "evidence": "auto-lint.sh checks 'if [[ \"$FILE_PATH\" != *.py ]]; then exit 0; fi' to skip non-Python files early."
+    },
+    {
+      "text": "Secret scanner checks for realistic patterns",
+      "passed": true,
+      "evidence": "Checks for AWS access keys (AKIA...), AWS secret keys (40-char strings near AWS keywords), generic API key/token assignments, GitHub tokens (ghp_/gho_/ghu_/ghs_/ghr_), bearer tokens, private key blocks, OpenAI/Stripe keys (sk-...), hardcoded passwords (with placeholder exclusions), and database connection strings with embedded credentials."
+    }
+  ],
+  "pass_rate": 1.0,
+  "expectations_met": 8,
+  "expectations_total": 8,
+  "notes": "Excellent output. All assertions pass. The lint hook is notably more sophisticated than the with_skill variant: it auto-fixes issues (ruff check --fix, ruff format) before doing a final check, and properly uses exit 2 to block when unfixable errors remain. The secret scanner covers nine pattern categories with smart false-positive reduction (skips lock/minified files, excludes common placeholder passwords). The settings.json correctly preserves existing hooks while adding the new ones. Both scripts have thorough error handling, graceful fallbacks when tools are missing, and clear header documentation including exit code semantics."
+}

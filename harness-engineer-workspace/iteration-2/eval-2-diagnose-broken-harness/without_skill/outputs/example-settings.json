@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allowedTools": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(git *)",
+      "Bash(npm run *)",
+      "Bash(npx *)",
+      "Bash(pnpm *)",
+      "Bash(node *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(which *)",
+      "Bash(echo *)",
+      "Bash(pwd)",
+      "Bash(make *)",
+      "Bash(cargo *)",
+      "Bash(python *)",
+      "Bash(pip *)",
+      "Bash(go *)"
+    ],
+    "denyTools": []
+  }
+}

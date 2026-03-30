@@ -1,0 +1,44 @@
+{
+  "eval_id": 2,
+  "eval_name": "diagnose-broken-harness",
+  "variant": "without_skill",
+  "expectations": [
+    {
+      "text": "Identifies that permissions are too restrictive as a specific problem",
+      "passed": true,
+      "evidence": "diagnosis.md Symptom 1 identifies 'no allowedTools configured, or it is set to an empty list' as the root cause of excessive permission prompting. Includes an example of the problematic settings.json with empty allow/deny arrays."
+    },
+    {
+      "text": "Identifies that CLAUDE.md is bloated/too long as a specific problem",
+      "passed": true,
+      "evidence": "diagnosis.md Symptom 2 identifies the 2000-line CLAUDE.md with 'copy-pasted prompt engineering guides from blog posts', 'entire API documentation pasted inline', 'duplicate sections', and 'generic instructions'. Lists specific anti-patterns and describes the impact on context window usage."
+    },
+    {
+      "text": "Identifies missing or broken memory system as a specific problem",
+      "passed": true,
+      "evidence": "diagnosis.md Symptom 3 identifies 'Claude Code sessions are stateless by design -- each new claude invocation starts fresh' and that conversational instructions do not persist. Explains that CLAUDE.md is the intended persistence mechanism but the bloated state makes it ineffective."
+    },
+    {
+      "text": "Structures diagnosis using the 7-pillar framework with scores",
+      "passed": false,
+      "evidence": "No mention of a 7-pillar framework anywhere in the outputs. The diagnosis uses a 3-symptom structure matching the user's complaints but does not reference pillars, does not score any dimensions, and does not assess areas beyond the three stated problems."
+    },
+    {
+      "text": "Produces a structured audit report (not just prose advice)",
+      "passed": false,
+      "evidence": "diagnosis.md is organized with headers and a summary table, but it is fundamentally prose diagnosis rather than a formal audit report. There are no scores, no maturity assessment, no systematic coverage beyond the three stated symptoms. It reads as 'here is what is wrong and why' rather than a scored evaluation of the full setup."
+    },
+    {
+      "text": "Provides specific, actionable fixes (not just 'improve your permissions')",
+      "passed": true,
+      "evidence": "fixes.md provides concrete steps: backup commands, specific file paths, example-settings.json with 29 allow rules and 10 deny rules, example-CLAUDE.md at ~57 lines, instructions for using 'add to CLAUDE.md' and /memory commands, a version check command, and a verification checklist with 7 specific test items."
+    },
+    {
+      "text": "Recommendations are prioritized by impact",
+      "passed": false,
+      "evidence": "fixes.md numbers fixes 1 through 4 but does not explicitly discuss prioritization by impact. There is no impact/effort analysis, no time estimates, no statement about which fix to do first or why. The ordering is implicit (permissions first, then CLAUDE.md, then memory, then version check) but the rationale for this ordering is never stated. The summary.md mentions the issues are 'interconnected' but does not prioritize them."
+    }
+  ],
+  "pass_rate": 0.5714285714285714,
+  "notes": "The without_skill variant correctly identifies all three core problems and provides usable fixes with concrete example files. However, it lacks the structural sophistication of the with_skill variant: no pillar framework, no scoring system, no formal audit report, and no explicit prioritization. The diagnosis reads as competent troubleshooting advice from a knowledgeable developer, but not as a systematic harness evaluation. The memory fix is notably weaker -- it describes CLAUDE.md as the persistence mechanism rather than suggesting a dedicated memory system, which is a reasonable but less sophisticated approach. The example files (example-settings.json, example-CLAUDE.md) are well-crafted and practical."
+}

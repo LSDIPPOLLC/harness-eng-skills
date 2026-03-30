@@ -1,0 +1,49 @@
+{
+  "eval_id": 2,
+  "eval_name": "diagnose-broken-harness",
+  "variant": "with_skill",
+  "expectations": [
+    {
+      "text": "Identifies permissions are too restrictive",
+      "passed": true,
+      "evidence": "Audit report clearly states 'No allow rules configured at any level' and maps it directly to the 'keeps asking permission' symptom. Shows empty allow arrays in both project and user settings.json."
+    },
+    {
+      "text": "Identifies CLAUDE.md is bloated/too long",
+      "passed": true,
+      "evidence": "Detailed content classification: ~850 lines copy-pasted blog content (43%), ~350 lines redundant config duplication (17%), ~200 lines stale references (10%), ~300 lines obvious instructions (15%). Only ~300 lines (~15%) were useful. Estimates ~8000 tokens loaded per conversation with ~1200 useful."
+    },
+    {
+      "text": "Identifies missing or broken memory system",
+      "passed": true,
+      "evidence": "Audit report Pillar 4 section: 'No memory infrastructure exists: No .claude/memory/ directory, No MEMORY.md index, No memory files of any type.' Directly links to the 'never remembers' symptom."
+    },
+    {
+      "text": "Structures diagnosis using 7-pillar framework with scores",
+      "passed": true,
+      "evidence": "Audit report includes all 7 pillars scored 0-3: Skill Composition (0/3), Context Engineering (1/3), Orchestration & Routing (0/3), Persistence & State (0/3), Quality Gates (0/3), Permissions & Safety (1/3), Ergonomics & Trust (1/3). Overall 3/21 rated 'Nascent'. Visual progress bars included."
+    },
+    {
+      "text": "Produces a structured audit report",
+      "passed": true,
+      "evidence": "Full audit-report.md with sections: Reported Symptoms, Harness Artifacts Found (table), Pillar Scores, Detailed Findings (three subsections for key pillars), Root Cause Summary (table mapping symptoms to causes), and Top 3 Recommendations."
+    },
+    {
+      "text": "Provides specific, actionable fixes",
+      "passed": true,
+      "evidence": "recommended-fixes.md contains 5 fixes, each with Problem statement, 'What to do' steps, rationale ('Why'), and verification method ('How to verify'). Also provides fixed-settings.json (drop-in replacement with 30 allow rules) and fixed-CLAUDE.md (complete rewrite, 142 lines)."
+    },
+    {
+      "text": "Recommendations are prioritized by impact",
+      "passed": true,
+      "evidence": "Fixes explicitly ordered by impact/effort ratio: (1) Fix permissions - 5 min, highest daily pain reduction; (2) Rewrite CLAUDE.md - 20 min, fixes context waste; (3) Create memory system - 10 min; (4) Add commands - 5 min; (5) Add hooks - medium impact. Execution Order section with clear sequencing."
+    },
+    {
+      "text": "fixed-CLAUDE.md includes Engineering Standards section with domain opinions",
+      "passed": true,
+      "evidence": "fixed-CLAUDE.md has '## Engineering Standards' section with 7 opinionated subsections: API Design (RESTful conventions, status codes, pagination, versioning), Validation (Zod schemas, controller-layer validation, 422 responses), Error Handling (custom AppError classes, structured logging), Database & Repository Patterns (Knex, domain methods, soft-delete), Authentication & Authorization (JWT, role-based), Testing Philosophy (integration over unit tests, no DB mocking, msw for external APIs, coverage targets)."
+    }
+  ],
+  "pass_rate": 1.0,
+  "notes": "Excellent output across all dimensions. The with_skill variant produced comprehensive, well-structured artifacts that directly address all three reported symptoms. The 7-pillar framework provides clear scoring with before/after projections. The fixed-CLAUDE.md is particularly strong -- 142 lines of focused, opinionated content with a robust Engineering Standards section containing domain-specific guidance for a Node.js/Express/PostgreSQL API project. The content classification of the bloated CLAUDE.md (token-level waste analysis) goes beyond what was asked. All fixes include verification steps, which is a quality touch."
+}

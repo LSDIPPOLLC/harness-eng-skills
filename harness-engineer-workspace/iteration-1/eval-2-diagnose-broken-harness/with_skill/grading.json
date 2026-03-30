@@ -1,0 +1,44 @@
+{
+  "eval_id": 2,
+  "eval_name": "diagnose-broken-harness",
+  "variant": "with_skill",
+  "expectations": [
+    {
+      "text": "Identifies that permissions are too restrictive as a specific problem",
+      "passed": true,
+      "evidence": "Pillar 6 in audit-report.md explicitly identifies the empty allow list in settings.json as the direct cause of 'keeps asking me permission for everything', scoring it 1/3 and labeling impact as 'Critical'."
+    },
+    {
+      "text": "Identifies that CLAUDE.md is bloated/too long as a specific problem",
+      "passed": true,
+      "evidence": "Pillar 2 in audit-report.md provides a detailed breakdown: 2000 lines (~8000 tokens), ~45% generic/copy-pasted blog content, ~20% redundant config duplication, ~19% stale references. Includes a classification table with line counts and percentages."
+    },
+    {
+      "text": "Identifies missing or broken memory system as a specific problem",
+      "passed": true,
+      "evidence": "Pillar 4 in audit-report.md states 'No memory system exists. No .claude/memory/ directory. No MEMORY.md.' and directly maps it to the user's complaint 'It never remembers what I told it last session'. Also identifies compounding effects like no feedback persistence and no user context."
+    },
+    {
+      "text": "Structures diagnosis using the 7-pillar framework with scores",
+      "passed": true,
+      "evidence": "audit-report.md scores all 7 pillars on a 0-3 scale: Skill Composition 0/3, Context Engineering 1/3, Orchestration 0/3, Persistence 0/3, Quality Gates 0/3, Permissions 1/3, Ergonomics 2/3. Overall maturity scored as 4/21 Nascent. Visual bar indicators included."
+    },
+    {
+      "text": "Produces a structured audit report (not just prose advice)",
+      "passed": true,
+      "evidence": "audit-report.md is a formal structured report with: overall maturity score, visual pillar score bars, pillar-by-pillar analysis sections, a classification table for CLAUDE.md content, a root cause analysis table mapping complaints to pillars, and a top-3 recommendations section."
+    },
+    {
+      "text": "Provides specific, actionable fixes (not just 'improve your permissions')",
+      "passed": true,
+      "evidence": "recommended-fixes.md provides step-by-step instructions for each fix. Permissions fix includes detecting package manager, adding specific allow rules, separating user-level vs project-level settings. CLAUDE.md fix specifies exactly what to delete (900-line blog block, 400-line config duplication, 380-line stale references) and how to restructure. Memory fix includes directory creation commands, file naming conventions, and seeding strategy. Additionally, concrete example files (fixed-settings.json with 32 specific allow rules, fixed-CLAUDE.md at ~80 lines) are provided."
+    },
+    {
+      "text": "Recommendations are prioritized by impact",
+      "passed": true,
+      "evidence": "recommended-fixes.md explicitly labels Priority 1 through 5 with impact/effort rationale: Priority 1 'Fix Permissions (Quick Win - 10 minutes)', Priority 2 'Trim CLAUDE.md (High Impact - 30 minutes)', Priority 3 'Set Up Memory System (High Impact - 15 minutes)'. Includes an execution order timeline across two sessions with expected score improvements (4/21 -> 10-12/21 -> 13-15/21)."
+    }
+  ],
+  "pass_rate": 1.0,
+  "notes": "The with_skill variant produced an exceptionally thorough and well-structured response. The 7-pillar framework gives the diagnosis a clear analytical backbone. The audit report is detailed with quantitative breakdowns (line counts, percentages, token estimates). The compound problem analysis in summary.md showing the reinforcing failure loop is a standout addition. Concrete artifacts (fixed-settings.json, fixed-CLAUDE.md) go beyond diagnosis into ready-to-use solutions. The prioritization includes time estimates, expected score improvements, and a two-session execution plan."
+}

@@ -1,0 +1,49 @@
+{
+  "eval_id": 3,
+  "eval_name": "create-python-hooks",
+  "variant": "with_skill",
+  "expectations": [
+    {
+      "text": "Creates a lint hook shell script that invokes ruff",
+      "passed": true,
+      "evidence": "auto-lint.sh exists, invokes 'ruff check --config pyproject.toml' and 'ruff format --check --diff' on the target file."
+    },
+    {
+      "text": "Creates a secret scanning hook shell script",
+      "passed": true,
+      "evidence": "secret-scanner.sh exists, scans content extracted from CLAUDE_TOOL_INPUT for multiple secret patterns."
+    },
+    {
+      "text": "Lint hook is PostToolUse on Edit",
+      "passed": true,
+      "evidence": "settings.json entry has \"type\": \"PostToolUse\", \"matcher\": \"Edit|Write\". Script comment also states 'PostToolUse on Edit|Write'."
+    },
+    {
+      "text": "Secret hook is PreToolUse on Write",
+      "passed": true,
+      "evidence": "settings.json entry has \"type\": \"PreToolUse\", \"matcher\": \"Write|Edit\". Script comment states 'PreToolUse on Write|Edit'."
+    },
+    {
+      "text": "Scripts use exit codes 0 for pass, 2 for block",
+      "passed": false,
+      "evidence": "The secret-scanner.sh correctly uses exit 2 to block and exit 0 to pass. However, the auto-lint.sh always exits 0 and never uses exit 2 -- it reports issues but never blocks. The script comment says 'Don't block, just report issues back to Claude'. The exit code convention is only half-implemented."
+    },
+    {
+      "text": "settings.json has hooks array with both hooks (flat array, not nested objects)",
+      "passed": true,
+      "evidence": "settings.json contains a flat \"hooks\" array with two entries, one for auto-lint (PostToolUse) and one for secret-scanner (PreToolUse). Each entry has type, matcher, and command fields."
+    },
+    {
+      "text": "Lint hook filters for .py files",
+      "passed": true,
+      "evidence": "auto-lint.sh uses a case statement: 'case \"$FILE_PATH\" in *.py)' to only run ruff on Python files, exiting 0 for all other file types."
+    },
+    {
+      "text": "Secret scanner checks for realistic patterns",
+      "passed": true,
+      "evidence": "Checks for AWS Access Key IDs (AKIA...), API secret keys (sk-...), GitHub PATs (ghp_...), GitHub OAuth tokens (gho_...), private key blocks (BEGIN PRIVATE KEY), Slack tokens (xox[bpors]-...), generic credential key-value pairs, and .env style secrets."
+    }
+  ],
+  "pass_rate": 0.875,
+  "notes": "Strong output overall. Both hook scripts are well-structured with proper shebang, error handling, and jq-based input parsing. The main gap is the lint hook never blocks (always exits 0), which means it only reports lint issues rather than enforcing them. The secret scanner is thorough with both blocking (exit 2) and warning (exit 0) tiers. The settings.json is clean and correctly structured. The summary.md provides good documentation including setup instructions."
+}

@@ -1,0 +1,49 @@
+{
+  "eval_id": 1,
+  "eval_name": "bootstrap-react-ts-project",
+  "variant": "without_skill",
+  "expectations": [
+    {
+      "text": "Produces a CLAUDE.md file",
+      "passed": true,
+      "evidence": "CLAUDE.md exists at outputs/CLAUDE.md (105 lines)"
+    },
+    {
+      "text": "Produces a settings.json file",
+      "passed": true,
+      "evidence": "settings.json exists at outputs/settings.json with allow and deny permission lists"
+    },
+    {
+      "text": "CLAUDE.md references vite, jest, and vercel specifically (not generic React boilerplate)",
+      "passed": true,
+      "evidence": "Line 5: 'built with Vite. Deployed to Vercel.' Line 10: 'Bundler: Vite'. Line 11: 'Testing: Jest with React Testing Library'. Line 13: 'Deployment: Vercel'. Also mentions vite.config.ts, vercel.json, VITE_ prefix for env vars."
+    },
+    {
+      "text": "CLAUDE.md includes runnable build/test/dev commands",
+      "passed": true,
+      "evidence": "Common Commands section (lines 33-66) includes: npm install, npm run dev, npm test, npm run test:watch, npx jest path/to/file.test.tsx, npm run lint, npm run lint:fix, npm run format, npx tsc --noEmit, npm run build, npm run preview"
+    },
+    {
+      "text": "settings.json permissions include npm/npx/node but NOT Bash(*)",
+      "passed": true,
+      "evidence": "Allow list contains specific commands: 'Bash(npm run dev)', 'Bash(npm test)', 'Bash(npx jest *)', 'Bash(npx tsc --noEmit)', 'Bash(npx prettier --write *)', 'Bash(npx eslint --fix *)'. No 'Bash(*)' present. However, permissions are more rigid than with_skill -- uses exact command strings (e.g., 'Bash(npm run dev)') rather than wildcard patterns (e.g., 'Bash(npm run *)'), which means unlisted npm scripts would still require prompting."
+    },
+    {
+      "text": "Output includes or recommends auto-format hooks (prettier/eslint)",
+      "passed": false,
+      "evidence": "settings.json contains only permissions (allow/deny) with no hooks section. No hook scripts were generated. The summary.md does not mention or recommend hooks. Prettier and ESLint are referenced in CLAUDE.md as manual commands, but no automation via hooks is configured or suggested."
+    },
+    {
+      "text": "Creates or recommends a memory directory structure",
+      "passed": false,
+      "evidence": "No memory directory or files were created. No mention of a memory system in the summary.md or any other output file. The output consists of only CLAUDE.md, settings.json, .claudeignore, and summary.md."
+    },
+    {
+      "text": "CLAUDE.md is under 400 lines (not bloated)",
+      "passed": true,
+      "evidence": "CLAUDE.md is 105 lines, well under the 400-line limit."
+    }
+  ],
+  "pass_rate": 0.75,
+  "notes": "Solid baseline output hitting 6 of 8 assertions. The CLAUDE.md is well-written with good stack-specific content and practical commands. The settings.json uses a reasonable allow/deny approach but with overly rigid exact-match permissions. The .claudeignore is a nice extra touch. However, the output lacks hooks (no auto-format or auto-lint automation) and no memory system was created or recommended. These are the two differentiating features the with_skill variant provides."
+}

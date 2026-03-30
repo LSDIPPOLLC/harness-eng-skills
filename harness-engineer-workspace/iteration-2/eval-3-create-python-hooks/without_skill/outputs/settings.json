@@ -1,0 +1,27 @@
+{
+  "hooks": [
+    {
+      "type": "PreToolUse",
+      "matcher": "Edit|Write",
+      "description": "Scan for secrets before any file is written or edited",
+      "command": "bash /home/lyle/projects/harness/hooks/secret-scanner.sh"
+    },
+    {
+      "type": "PostToolUse",
+      "matcher": "Edit|Write",
+      "description": "Auto-lint Python files with ruff after edits",
+      "command": "bash /home/lyle/projects/harness/hooks/auto-lint.sh"
+    },
+    {
+      "type": "PostToolUse",
+      "matcher": "Edit|Write",
+      "description": "Validate harness file changes for consistency",
+      "command": "bash /home/lyle/projects/harness/hooks/harness-validate.sh"
+    },
+    {
+      "type": "Stop",
+      "description": "End-of-conversation harness health check",
+      "command": "bash /home/lyle/projects/harness/hooks/harness-drift.sh"
+    }
+  ]
+}

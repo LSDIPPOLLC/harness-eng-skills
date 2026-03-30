@@ -1,0 +1,15 @@
+{
+  "hooks": [
+    {
+      "type": "PostToolUse",
+      "matcher": "Edit|Write",
+      "description": "Validate harness file changes for consistency",
+      "command": "bash /home/lyle/projects/harness/hooks/harness-validate.sh"
+    },
+    {
+      "type": "Stop",
+      "description": "End-of-conversation harness health check",
+      "command": "bash /home/lyle/projects/harness/hooks/harness-drift.sh"
+    }
+  ]
+}

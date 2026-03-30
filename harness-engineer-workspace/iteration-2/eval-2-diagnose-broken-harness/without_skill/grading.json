@@ -1,0 +1,49 @@
+{
+  "eval_id": 2,
+  "eval_name": "diagnose-broken-harness",
+  "variant": "without_skill",
+  "expectations": [
+    {
+      "text": "Identifies permissions are too restrictive",
+      "passed": true,
+      "evidence": "diagnosis.md identifies 'Missing/empty allowedTools in settings.json' as root cause. Explains the allowlist model and that 'tools and commands that are not explicitly permitted will trigger an interactive permission prompt every time.'"
+    },
+    {
+      "text": "Identifies CLAUDE.md is bloated/too long",
+      "passed": true,
+      "evidence": "diagnosis.md identifies token waste, instruction dilution, and conflicting directives from the bloated CLAUDE.md. Notes it should be '50-200 lines' and explains how copy-pasted blog content causes multiple problems."
+    },
+    {
+      "text": "Identifies missing or broken memory system",
+      "passed": true,
+      "evidence": "diagnosis.md explains that Claude Code lacks built-in persistent memory, and that the user's preferences were 'never captured in CLAUDE.md or were drowned out by the 2000 lines of blog content.' However, the solution focuses on CLAUDE.md + --continue/--resume rather than identifying a dedicated memory system (.claude/memory/) as missing."
+    },
+    {
+      "text": "Structures diagnosis using 7-pillar framework with scores",
+      "passed": false,
+      "evidence": "No pillar framework is used. Diagnosis is organized by the three reported symptoms, not by pillars. No scoring system (e.g., 0-3 per pillar or overall maturity score) appears anywhere in the output."
+    },
+    {
+      "text": "Produces a structured audit report",
+      "passed": false,
+      "evidence": "diagnosis.md is a root cause analysis, not an audit report. It lacks: artifact inventory, pillar-by-pillar assessment, scoring, before/after projections, and systematic coverage of areas not mentioned by the user. It only addresses the three reported symptoms."
+    },
+    {
+      "text": "Provides specific, actionable fixes",
+      "passed": true,
+      "evidence": "fixes.md provides step-by-step instructions for all three issues. Includes specific tool patterns to allow (e.g., 'Bash(npm run *)'), CLAUDE.md guidelines, and session management commands. example-settings.json provides a usable template."
+    },
+    {
+      "text": "Recommendations are prioritized by impact",
+      "passed": true,
+      "evidence": "fixes.md has an 'Implementation Order' section: (1) Fix settings.json first - 'immediately stops the permission spam', (2) Clean up CLAUDE.md - 'fixes both the bloat and the memory issues', (3) Adopt session management habits. Reasoning provided for sequencing."
+    },
+    {
+      "text": "fixed-CLAUDE.md includes Engineering Standards section with domain opinions",
+      "passed": false,
+      "evidence": "example-CLAUDE.md is a generic template (~47 lines) with placeholder text like '[TypeScript/Python/Go/etc.]' and '[framework]'. It has a 'Conventions' section with 4 generic bullet points ('All new code must have tests', 'Prefer composition over inheritance') but no 'Engineering Standards' section and no domain-specific opinionated guidance (no API design patterns, no error handling conventions, no testing philosophy, no database patterns)."
+    }
+  ],
+  "pass_rate": 0.5,
+  "notes": "The without_skill variant correctly identifies all three root causes and provides functional fixes, but lacks the structural sophistication of the with_skill variant. Key gaps: (1) No pillar framework or scoring system -- diagnosis is reactive to symptoms rather than systematic. (2) No proper audit report format. (3) The example-CLAUDE.md is a generic placeholder template rather than a populated, opinionated document with engineering standards. The memory solution is also weaker -- recommends CLAUDE.md + --continue/--resume rather than a dedicated memory system. The fixes are actionable but less detailed (no time estimates, no verification steps). Overall a competent but shallow response compared to the skill-guided variant."
+}

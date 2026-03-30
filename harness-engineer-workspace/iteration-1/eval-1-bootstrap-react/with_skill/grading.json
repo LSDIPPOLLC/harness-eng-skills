@@ -1,0 +1,49 @@
+{
+  "eval_id": 1,
+  "eval_name": "bootstrap-react-ts-project",
+  "variant": "with_skill",
+  "expectations": [
+    {
+      "text": "Produces a CLAUDE.md file",
+      "passed": true,
+      "evidence": "CLAUDE.md exists at outputs/CLAUDE.md (99 lines)"
+    },
+    {
+      "text": "Produces a settings.json file",
+      "passed": true,
+      "evidence": "settings.json exists at outputs/settings.json with permissions and hooks configuration"
+    },
+    {
+      "text": "CLAUDE.md references vite, jest, and vercel specifically (not generic React boilerplate)",
+      "passed": true,
+      "evidence": "Line 2: 'built with TypeScript and Vite. Deployed to Vercel.' Line 75: 'Jest with React Testing Library'. Line 84: 'Vercel' deployment section with VITE_ prefix rule. Also references vite.config, vercel.json, and Vite entry point (main.tsx)."
+    },
+    {
+      "text": "CLAUDE.md includes runnable build/test/dev commands",
+      "passed": true,
+      "evidence": "Build & Run section (lines 7-37) includes: npm install, npm run dev, npm run build, npm run preview, npm test, npm test -- --watch, npm run lint, npm run format, npx tsc --noEmit"
+    },
+    {
+      "text": "settings.json permissions include npm/npx/node but NOT Bash(*)",
+      "passed": true,
+      "evidence": "Permissions use scoped patterns: 'Bash(npm test *)', 'Bash(npm run *)', 'Bash(npx tsc *)', 'Bash(npx prettier *)', 'Bash(npx eslint *)', 'Bash(npx jest *)', 'Bash(npx vite *)', 'Bash(node *)'. No 'Bash(*)' present. Also includes scoped git read commands and filesystem read commands."
+    },
+    {
+      "text": "Output includes or recommends auto-format hooks (prettier/eslint)",
+      "passed": true,
+      "evidence": "settings.json includes three hooks: auto-format.sh (PostToolUse on Edit|Write, runs Prettier), auto-lint.sh (PostToolUse on Edit, runs ESLint), and secret-scanner.sh (PreToolUse on Write|Edit). Actual hook scripts are provided in outputs/hooks/."
+    },
+    {
+      "text": "Creates or recommends a memory directory structure",
+      "passed": true,
+      "evidence": "Full memory directory created at outputs/memory/ with MEMORY.md index and 4 seed memories: user_role.md, project_tech_stack.md, project_bootstrap.md, reference_deployment.md. MEMORY.md organizes entries by type (User, Feedback, Project, References)."
+    },
+    {
+      "text": "CLAUDE.md is under 400 lines (not bloated)",
+      "passed": true,
+      "evidence": "CLAUDE.md is 99 lines, well under the 400-line limit."
+    }
+  ],
+  "pass_rate": 1.0,
+  "notes": "Excellent output. All 8 assertions pass. The with_skill variant produced a comprehensive, well-structured harness: a concise CLAUDE.md (99 lines) with stack-specific content, properly scoped permissions with wildcard patterns for flexibility, three practical hook scripts (auto-format, auto-lint, secret scanner), and a full memory directory with categorized seed memories. The summary.md demonstrates clear reasoning for each decision. This goes meaningfully beyond the baseline requirements."
+}

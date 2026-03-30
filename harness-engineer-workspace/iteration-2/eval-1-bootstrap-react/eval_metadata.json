@@ -1,0 +1,17 @@
+{
+  "eval_id": 1,
+  "eval_name": "bootstrap-react-ts-project",
+  "prompt": "I just cloned this react/typescript project from my team and I need to set up Claude Code for it. It's got a vite config, eslint, prettier, jest for testing, and we deploy to Vercel. The repo has like 200 files and a pretty standard src/components structure. Can you get everything configured so Claude works well with this codebase?",
+  "assertions": [
+    {"id": "claude-md-exists", "text": "Produces a CLAUDE.md file", "type": "file_exists"},
+    {"id": "settings-json-exists", "text": "Produces a settings.json file", "type": "file_exists"},
+    {"id": "stack-specific-not-generic", "text": "CLAUDE.md references vite, jest, and vercel specifically", "type": "content_check"},
+    {"id": "build-commands-present", "text": "CLAUDE.md includes runnable build/test/dev commands", "type": "content_check"},
+    {"id": "permissions-scoped", "text": "settings.json permissions include npm/npx/node but NOT Bash(*)", "type": "content_check"},
+    {"id": "hooks-recommended", "text": "Output includes or recommends auto-format hooks", "type": "content_check"},
+    {"id": "memory-structure", "text": "Creates or recommends a memory directory structure", "type": "content_check"},
+    {"id": "context-budget-reasonable", "text": "CLAUDE.md is under 400 lines", "type": "quantitative"},
+    {"id": "engineering-standards", "text": "CLAUDE.md includes opinionated Engineering Standards covering component patterns, state management, API/data fetching, validation, and testing philosophy", "type": "content_check"},
+    {"id": "testing-philosophy-depth", "text": "Testing section includes specific anti-patterns (e.g. over-mocking) and guidance on what makes a meaningful test", "type": "content_check"}
+  ]
+}

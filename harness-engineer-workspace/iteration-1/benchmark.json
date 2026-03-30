@@ -1,0 +1,130 @@
+{
+  "metadata": {
+    "skill_name": "harness-engineer",
+    "skill_path": "/home/lyle/projects/harness/skills/harness-engineer",
+    "executor_model": "claude-opus-4-6",
+    "analyzer_model": "claude-opus-4-6",
+    "timestamp": "2026-03-27T18:30:00Z",
+    "evals_run": ["bootstrap-react-ts-project", "diagnose-broken-harness", "create-python-hooks"],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_name": "bootstrap-react-ts-project",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "total": 8,
+        "expectations": [
+          {"text": "Produces a CLAUDE.md file", "passed": true, "evidence": "CLAUDE.md exists (99 lines)"},
+          {"text": "Produces a settings.json file", "passed": true, "evidence": "settings.json with permissions and hooks"},
+          {"text": "CLAUDE.md references vite, jest, and vercel specifically", "passed": true, "evidence": "References vite.config, jest, Vercel deployment, VITE_ prefix"},
+          {"text": "CLAUDE.md includes runnable build/test/dev commands", "passed": true, "evidence": "npm install, npm run dev, npm test, npm run build"},
+          {"text": "settings.json permissions include npm/npx/node but NOT Bash(*)", "passed": true, "evidence": "Scoped patterns: Bash(npm test *), Bash(npm run *), etc."},
+          {"text": "Output includes or recommends auto-format hooks", "passed": true, "evidence": "Three hooks: auto-format.sh (Prettier), auto-lint.sh (ESLint), secret-scanner.sh"},
+          {"text": "Creates or recommends a memory directory structure", "passed": true, "evidence": "Full memory/ dir with MEMORY.md + 4 seed memories"},
+          {"text": "CLAUDE.md is under 400 lines", "passed": true, "evidence": "99 lines"}
+        ]
+      },
+      "without_skill": {
+        "pass_rate": 0.75,
+        "passed": 6,
+        "total": 8,
+        "expectations": [
+          {"text": "Produces a CLAUDE.md file", "passed": true, "evidence": "CLAUDE.md exists (105 lines)"},
+          {"text": "Produces a settings.json file", "passed": true, "evidence": "settings.json with allow/deny lists"},
+          {"text": "CLAUDE.md references vite, jest, and vercel specifically", "passed": true, "evidence": "References Vite, Jest, Vercel, vite.config.ts"},
+          {"text": "CLAUDE.md includes runnable build/test/dev commands", "passed": true, "evidence": "npm install, npm run dev, npm test, npm run build"},
+          {"text": "settings.json permissions include npm/npx/node but NOT Bash(*)", "passed": true, "evidence": "Specific commands but overly rigid exact-match patterns"},
+          {"text": "Output includes or recommends auto-format hooks", "passed": false, "evidence": "No hooks section, no hook scripts, no hook recommendations"},
+          {"text": "Creates or recommends a memory directory structure", "passed": false, "evidence": "No memory directory or files created or recommended"},
+          {"text": "CLAUDE.md is under 400 lines", "passed": true, "evidence": "105 lines"}
+        ]
+      }
+    },
+    {
+      "eval_name": "diagnose-broken-harness",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "total": 7,
+        "expectations": [
+          {"text": "Identifies permissions are too restrictive", "passed": true, "evidence": "Pillar 6 scored 1/3, identifies empty allow list as root cause"},
+          {"text": "Identifies CLAUDE.md is bloated/too long", "passed": true, "evidence": "Pillar 2 breakdown: 45% generic, 20% redundant, 19% stale"},
+          {"text": "Identifies missing or broken memory system", "passed": true, "evidence": "Pillar 4: no .claude/memory/, no MEMORY.md, maps to user complaint"},
+          {"text": "Structures diagnosis using 7-pillar framework with scores", "passed": true, "evidence": "All 7 pillars scored 0-3, overall 4/21 Nascent"},
+          {"text": "Produces a structured audit report", "passed": true, "evidence": "Formal report with scores, visual bars, classification table, root cause analysis"},
+          {"text": "Provides specific, actionable fixes", "passed": true, "evidence": "Step-by-step instructions, fixed-settings.json with 32 rules, fixed-CLAUDE.md at ~80 lines"},
+          {"text": "Recommendations are prioritized by impact", "passed": true, "evidence": "Priority 1-5 with impact/effort rationale and time estimates"}
+        ]
+      },
+      "without_skill": {
+        "pass_rate": 0.57,
+        "passed": 4,
+        "total": 7,
+        "expectations": [
+          {"text": "Identifies permissions are too restrictive", "passed": true, "evidence": "Identifies empty allow list as root cause"},
+          {"text": "Identifies CLAUDE.md is bloated/too long", "passed": true, "evidence": "Identifies copy-pasted guides, duplicate sections, generic instructions"},
+          {"text": "Identifies missing or broken memory system", "passed": true, "evidence": "Identifies sessions are stateless, instructions don't persist"},
+          {"text": "Structures diagnosis using 7-pillar framework with scores", "passed": false, "evidence": "No pillar framework, uses 3-symptom structure instead"},
+          {"text": "Produces a structured audit report", "passed": false, "evidence": "Prose diagnosis, no scores, no systematic coverage"},
+          {"text": "Provides specific, actionable fixes", "passed": true, "evidence": "Concrete steps, example-settings.json with 29 rules"},
+          {"text": "Recommendations are prioritized by impact", "passed": false, "evidence": "Numbered but no explicit impact/effort analysis or rationale"}
+        ]
+      }
+    },
+    {
+      "eval_name": "create-python-hooks",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "total": 8,
+        "expectations": [
+          {"text": "Creates a lint hook shell script that invokes ruff", "passed": true, "evidence": "auto-lint.sh invokes ruff check and ruff format"},
+          {"text": "Creates a secret scanning hook shell script", "passed": true, "evidence": "secret-scanner.sh scans CLAUDE_TOOL_INPUT for patterns"},
+          {"text": "Lint hook is PostToolUse on Edit", "passed": true, "evidence": "PostToolUse with matcher Edit|Write"},
+          {"text": "Secret hook is PreToolUse on Write", "passed": true, "evidence": "PreToolUse with matcher Write|Edit"},
+          {"text": "Scripts use exit codes 0 for pass, 2 for block", "passed": true, "evidence": "auto-lint.sh exits 0, secret-scanner.sh exits 2 on detection"},
+          {"text": "settings.json has hooks array with both hooks", "passed": true, "evidence": "Flat array format with both entries"},
+          {"text": "Lint hook filters for .py files", "passed": true, "evidence": "case statement: *.py)"},
+          {"text": "Secret scanner checks for realistic patterns", "passed": true, "evidence": "AWS AKIA, OpenAI sk-, GitHub ghp_, PEM private keys"}
+        ]
+      },
+      "without_skill": {
+        "pass_rate": 0.875,
+        "passed": 7,
+        "total": 8,
+        "expectations": [
+          {"text": "Creates a lint hook shell script that invokes ruff", "passed": true, "evidence": "auto-lint.sh invokes ruff check --fix and ruff format"},
+          {"text": "Creates a secret scanning hook shell script", "passed": true, "evidence": "secret-scanner.sh scans for secret patterns"},
+          {"text": "Lint hook is PostToolUse on Edit", "passed": true, "evidence": "PostToolUse with matcher Edit|Write"},
+          {"text": "Secret hook is PreToolUse on Write", "passed": true, "evidence": "PreToolUse with matcher Edit|Write"},
+          {"text": "Scripts use exit codes 0 for pass, 2 for block", "passed": true, "evidence": "Correct exit codes used"},
+          {"text": "settings.json has hooks array with both hooks", "passed": false, "evidence": "Wrong format: nested object {PreToolUse:[...], PostToolUse:[...]} instead of flat array"},
+          {"text": "Lint hook filters for .py files", "passed": true, "evidence": "Checks if FILE_PATH != *.py then exit 0"},
+          {"text": "Secret scanner checks for realistic patterns", "passed": true, "evidence": "AWS, GitHub, PEM, Slack, database strings, generic patterns"}
+        ]
+      }
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "mean_pass_rate": 1.0,
+      "stddev_pass_rate": 0.0
+    },
+    "without_skill": {
+      "mean_pass_rate": 0.73,
+      "stddev_pass_rate": 0.13
+    },
+    "delta": {
+      "pass_rate": "+0.27"
+    }
+  },
+  "notes": [
+    "With-skill variant scored 100% across all 3 evals (23/23 assertions passed)",
+    "Without-skill scored 73% average (17/23 assertions passed)",
+    "Largest delta on eval 2 (diagnose): +43% — the 7-pillar framework is the primary differentiator",
+    "Eval 3 (hooks): baseline got wrong settings.json format (nested vs flat array) — skill knowledge of Claude Code internals matters",
+    "Eval 1 (bootstrap): baseline missed hooks and memory entirely — skill's composed workflow ensures coverage"
+  ]
+}

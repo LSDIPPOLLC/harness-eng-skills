@@ -1,0 +1,47 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git show*)",
+      "Bash(npm test*)",
+      "Bash(npm run lint*)",
+      "Bash(npm run build*)",
+      "Bash(npx tsc*)",
+      "Bash(pnpm test*)",
+      "Bash(pnpm run lint*)",
+      "Bash(pnpm run build*)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(which *)",
+      "Bash(node -e *)",
+      "Bash(python3 -c *)",
+      "Edit",
+      "Write",
+      "NotebookEdit"
+    ],
+    "deny": [
+      "Bash(rm -rf /)*",
+      "Bash(sudo *)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | bash)",
+      "Bash(chmod 777 *)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(> /dev/*)",
+      "Bash(dd *)",
+      "Bash(mkfs *)"
+    ]
+  },
+  "apiKey": "",
+  "model": "",
+  "customInstructions": ""
+}

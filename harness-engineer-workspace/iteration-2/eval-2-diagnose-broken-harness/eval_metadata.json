@@ -1,0 +1,15 @@
+{
+  "eval_id": 2,
+  "eval_name": "diagnose-broken-harness",
+  "prompt": "my claude setup feels really off - it keeps asking me permission for everything, the CLAUDE.md is like 2000 lines long and half of it is copy-pasted from some blog post, and it never remembers what I told it last session. Can you figure out what's wrong and fix it?",
+  "assertions": [
+    {"id": "identifies-permission-problem", "text": "Identifies permissions are too restrictive", "type": "content_check"},
+    {"id": "identifies-context-bloat", "text": "Identifies CLAUDE.md is bloated/too long", "type": "content_check"},
+    {"id": "identifies-memory-gap", "text": "Identifies missing or broken memory system", "type": "content_check"},
+    {"id": "uses-pillar-framework", "text": "Structures diagnosis using 7-pillar framework with scores", "type": "content_check"},
+    {"id": "provides-audit-report", "text": "Produces a structured audit report", "type": "content_check"},
+    {"id": "actionable-fixes", "text": "Provides specific, actionable fixes", "type": "content_check"},
+    {"id": "prioritized-recommendations", "text": "Recommendations are prioritized by impact", "type": "content_check"},
+    {"id": "fixed-claude-md-has-standards", "text": "fixed-CLAUDE.md includes Engineering Standards section with domain opinions", "type": "content_check"}
+  ]
+}

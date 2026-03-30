@@ -1,0 +1,59 @@
+{
+  "eval_id": 1,
+  "eval_name": "bootstrap-react-ts-project",
+  "variant": "without_skill",
+  "expectations": [
+    {
+      "text": "Produces a CLAUDE.md file",
+      "passed": true,
+      "evidence": "CLAUDE.md exists at outputs/CLAUDE.md, 75 lines."
+    },
+    {
+      "text": "Produces a settings.json file",
+      "passed": true,
+      "evidence": "settings.json exists at outputs/settings.json with permissions and deny rules."
+    },
+    {
+      "text": "CLAUDE.md references vite, jest, and vercel specifically",
+      "passed": true,
+      "evidence": "Header: 'React/TypeScript single-page application built with Vite, deployed to Vercel.' Testing: 'Jest with React Testing Library'. Build section: 'Vite development server', 'tsc && vite build'. Deployment: 'Vercel builds run npm run build'."
+    },
+    {
+      "text": "CLAUDE.md includes runnable build/test/dev commands",
+      "passed": true,
+      "evidence": "Common Commands section lists: npm run dev, npm run build, npm run preview, npm run lint, npm run format, npm run test, npm run test:watch, npm run test:coverage."
+    },
+    {
+      "text": "settings.json permissions include npm/npx/node but NOT Bash(*)",
+      "passed": true,
+      "evidence": "Scoped permissions for npm run dev/build/lint/format/test/preview, npx tsc, npm install, git commands, and tool permissions (Read, Edit, Write, Glob, Grep). No Bash(*) wildcard. Deny list blocks rm -rf /, npm publish, vercel --prod."
+    },
+    {
+      "text": "Output includes or recommends auto-format hooks",
+      "passed": false,
+      "evidence": "No hooks section in settings.json. No hook files created. No mention of hooks in CLAUDE.md or summary.md. The summary explicitly states 'No additional configuration files (like .claude/ directory configs or MCP server settings) were created.'"
+    },
+    {
+      "text": "Creates or recommends a memory directory structure",
+      "passed": false,
+      "evidence": "No memory directory created. No memory files. No mention of memory or context persistence in any output file."
+    },
+    {
+      "text": "CLAUDE.md is under 400 lines",
+      "passed": true,
+      "evidence": "CLAUDE.md is 75 lines, well under the 400-line budget."
+    },
+    {
+      "text": "CLAUDE.md includes opinionated Engineering Standards covering component patterns, state management, API/data fetching, validation, and testing philosophy",
+      "passed": false,
+      "evidence": "No 'Engineering Standards' section. Has 'Code Style and Conventions' covering naming conventions and file structure, but nothing on: state management patterns, API/data fetching strategy, validation approach, or component composition philosophy. The guidance is limited to surface-level style rules (PascalCase, named exports, import ordering) rather than architectural opinions."
+    },
+    {
+      "text": "Testing section includes specific anti-patterns (e.g. over-mocking) and guidance on what makes a meaningful test",
+      "passed": false,
+      "evidence": "Testing Guidelines section is 5 bullet points covering: co-location, React Testing Library queries, 'at least one render test', mock API calls, run tests before committing. No anti-patterns mentioned. No discussion of over-mocking, testing implementation details, or what distinguishes a meaningful test from a superficial one. The guidance is generic and shallow."
+    }
+  ],
+  "pass_rate": 0.6,
+  "notes": "Competent baseline output that covers the fundamentals (CLAUDE.md, settings.json, .claudeignore) but lacks depth. The CLAUDE.md is functional but reads like generic React project documentation rather than opinionated team guidance. Missing all iteration-2 improvements: no engineering standards, no testing depth, no hooks, no memory system. The settings.json is adequate but includes broader git permissions (git push, git checkout) that could be tighter. The .claudeignore is a nice touch not seen in the with_skill variant. Overall, this is a 'good enough' setup that would work but wouldn't meaningfully shape Claude's behavior toward team patterns."
+}

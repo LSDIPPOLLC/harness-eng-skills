@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test *)",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(npx prettier *)",
+      "Bash(npx eslint *)",
+      "Bash(npx jest *)",
+      "Bash(npx vite *)",
+      "Bash(node *)",
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git branch *)",
+      "Bash(git show *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(mkdir *)",
+      "Bash(which *)"
+    ]
+  },
+  "hooks": [
+    {
+      "type": "PostToolUse",
+      "matcher": "Edit|Write",
+      "command": "bash .claude/hooks/auto-format.sh"
+    },
+    {
+      "type": "PostToolUse",
+      "matcher": "Edit",
+      "command": "bash .claude/hooks/auto-lint.sh"
+    },
+    {
+      "type": "PreToolUse",
+      "matcher": "Write|Edit",
+      "command": "bash .claude/hooks/secret-scanner.sh"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "eval_id": 3,
+  "eval_name": "create-python-hooks",
+  "prompt": "I want to add a hook that automatically runs our linter whenever Claude edits a python file, and another hook that checks for secrets before any file gets written. We're using ruff for linting and our settings are in pyproject.toml. Also make sure the hooks are in settings.json properly.",
+  "assertions": [
+    {
+      "id": "lint-hook-script",
+      "text": "Creates a lint hook shell script that invokes ruff",
+      "type": "file_exists"
+    },
+    {
+      "id": "secret-hook-script",
+      "text": "Creates a secret scanning hook shell script",
+      "type": "file_exists"
+    },
+    {
+      "id": "lint-hook-type",
+      "text": "Lint hook is PostToolUse on Edit (fires after edits, not before)",
+      "type": "content_check"
+    },
+    {
+      "id": "secret-hook-type",
+      "text": "Secret hook is PreToolUse on Write (blocks before writing)",
+      "type": "content_check"
+    },
+    {
+      "id": "correct-exit-codes",
+      "text": "Scripts use correct exit codes: 0 for pass, 2 for block",
+      "type": "content_check"
+    },
+    {
+      "id": "settings-json-hooks-array",
+      "text": "settings.json contains a hooks array with both hooks configured",
+      "type": "content_check"
+    },
+    {
+      "id": "python-file-filtering",
+      "text": "Lint hook filters for .py files specifically",
+      "type": "content_check"
+    },
+    {
+      "id": "secret-patterns-realistic",
+      "text": "Secret scanner checks for realistic patterns (AWS keys, API tokens, private keys)",
+      "type": "content_check"
+    }
+  ]
+}

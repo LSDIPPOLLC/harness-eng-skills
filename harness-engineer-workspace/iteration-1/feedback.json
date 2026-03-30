@@ -1,0 +1,15 @@
+{
+  "reviews": [
+    {
+      "run_id": "eval-1-bootstrap-react-with_skill",
+      "feedback": "this looks good but maybe some finer grain suggestions on how to write components / state management / validation / api clients etc - would be good to create specific coding standards to ensure consistency",
+      "timestamp": "2026-03-27T18:54:39.230Z"
+    },
+    {
+      "run_id": "eval-1-bootstrap-react-without_skill",
+      "feedback": "some guidance on writing meaningful tests - ensuring actual functionality and not overmocking would be good. also some more specific guidelines and opinions on finer points of app dev such as state management strategy, api client usage, generally speaking having a well defined opinion for most pillars of engineering in the relevant domain ",
+      "timestamp": "2026-03-27T18:54:39.230Z"
+    }
+  ],
+  "status": "in_progress"
+}

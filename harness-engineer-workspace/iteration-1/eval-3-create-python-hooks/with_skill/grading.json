@@ -1,0 +1,49 @@
+{
+  "eval_id": 3,
+  "eval_name": "create-python-hooks",
+  "variant": "with_skill",
+  "expectations": [
+    {
+      "text": "Creates a lint hook shell script that invokes ruff",
+      "passed": true,
+      "evidence": "auto-lint.sh exists, invokes 'ruff check' and 'ruff format' on the file path extracted from CLAUDE_TOOL_INPUT."
+    },
+    {
+      "text": "Creates a secret scanning hook shell script",
+      "passed": true,
+      "evidence": "secret-scanner.sh exists, scans content extracted from CLAUDE_TOOL_INPUT for secret patterns using grep."
+    },
+    {
+      "text": "Lint hook is PostToolUse on Edit (fires after edits, not before)",
+      "passed": true,
+      "evidence": "settings.json configures the lint hook as \"type\": \"PostToolUse\" with \"matcher\": \"Edit|Write\". Script header also states 'PostToolUse on Edit|Write'."
+    },
+    {
+      "text": "Secret hook is PreToolUse on Write (blocks before writing)",
+      "passed": true,
+      "evidence": "settings.json configures the secret hook as \"type\": \"PreToolUse\" with \"matcher\": \"Write|Edit\". Script uses exit 2 to block writes."
+    },
+    {
+      "text": "Scripts use correct exit codes: 0 for pass, 2 for block",
+      "passed": true,
+      "evidence": "auto-lint.sh always exits 0 (reporting only, never blocking). secret-scanner.sh exits 2 when secrets are detected (blocking the write) and exits 0 when content is clean."
+    },
+    {
+      "text": "settings.json contains a hooks array with both hooks configured",
+      "passed": true,
+      "evidence": "settings.json has a top-level \"hooks\" key containing a JSON array with two entries: the PostToolUse lint hook and the PreToolUse secret scanner hook."
+    },
+    {
+      "text": "Lint hook filters for .py files specifically",
+      "passed": true,
+      "evidence": "auto-lint.sh uses a case statement: 'case \"$FILE_PATH\" in *.py)' to filter for Python files only."
+    },
+    {
+      "text": "Secret scanner checks for realistic patterns (AWS keys, API tokens, private keys)",
+      "passed": true,
+      "evidence": "secret-scanner.sh checks for AWS keys (AKIA pattern), OpenAI/Stripe keys (sk- pattern), GitHub tokens (ghp_ pattern), PEM private keys (-----BEGIN PRIVATE KEY), and environment variable assignments with secret values."
+    }
+  ],
+  "pass_rate": 1.0,
+  "notes": "Excellent output. All hooks are correctly structured with the proper Claude Code hooks format (flat array in settings.json). The lint hook correctly uses PostToolUse and filters for .py files. The secret scanner correctly uses PreToolUse with exit code 2 to block. Script extracts content from CLAUDE_TOOL_INPUT using jq, which is the correct approach. Also includes a second-tier warning for generic credential patterns that does not block (exit 0). Summary documentation is thorough and accurate."
+}
